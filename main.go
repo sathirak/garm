@@ -1,12 +1,16 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/internal/config"
-	"fmt"
-	"net/http"
+	"github.com/sathirak/garm/middlewares"
+	"github.com/sathirak/garm/routes"
 
 	// "github.com/sathirak/garm/internal/db"
-	"github.com/sathirak/garm/controllers"
 	"github.com/sathirak/garm/pkg/logger"
 )
 
@@ -25,12 +29,19 @@ func main() {
 
 	// db.Initialize()
 
-	mux := http.NewServeMux()
+	r := gin.New()
+	r.Use(middlewares.Logger())
+	routes.SetupRoutes(r)
 
-	mux.HandleFunc("GET /healthz", controllers.Healthz)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-quit
+		log.Infof("Shutting down application...")
+		os.Exit(0)
+	}()
 
-	err = http.ListenAndServe(fmt.Sprintf(":%s", cfg.App.Port), mux)
-
+	err = r.Run(":" + cfg.App.Port)
 	if err != nil {
 		log.Error(err.Error())
 	}

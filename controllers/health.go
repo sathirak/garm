@@ -1,9 +1,12 @@
 package controllers
 
-import "net/http"
+import (
+	"net/http"
 
-func Healthz(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"status": "ok"}`))
+	"github.com/gin-gonic/gin"
+	"github.com/sathirak/garm/handlers"
+)
+
+func Healthz(c *gin.Context) {
+	handlers.HandleSuccessResponse(c, "Garm is healthy", http.StatusOK)
 }
