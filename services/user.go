@@ -5,13 +5,15 @@ import (
 
 	"github.com/sathirak/garm/models"
 	"github.com/sathirak/garm/models/dto"
-	"github.com/sathirak/garm/pkg/id"
+	"github.com/sathirak/garm/pkg/ksuid"
+	"github.com/sathirak/garm/repository"
+	"github.com/sathirak/garm/services/methods"
 )
 
 func CreateUser(user *models.User, dto dto.User) error {
 
 	*user = models.User{
-		ID:            id.Gen().String(),
+		ID:            ksuid.Gen().String(),
 		FirstName:     dto.FirstName,
 		LastName:      dto.LastName,
 		Email:         dto.Email,
@@ -21,5 +23,11 @@ func CreateUser(user *models.User, dto dto.User) error {
 		UpdatedAt:     time.Now(),
 	}
 
-	return nil
+	err := repository.CreateUser(user)
+
+	if err != nil {
+		return err
+	}
+
+	return methods.CreatePassword(user.ID, "password")
 }

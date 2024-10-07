@@ -10,7 +10,7 @@ import (
 	"github.com/sathirak/garm/middlewares"
 	"github.com/sathirak/garm/routes"
 
-	// "github.com/sathirak/garm/internal/db"
+	"github.com/sathirak/garm/internal/db"
 	"github.com/sathirak/garm/pkg/logger"
 )
 
@@ -27,7 +27,7 @@ func main() {
 		log.Fatalf("error initializing environment config")
 	}
 
-	// db.Initialize()
+	db.Initialize()
 
 	r := gin.New()
 	r.Use(middlewares.Logger())
