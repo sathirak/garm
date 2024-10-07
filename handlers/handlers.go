@@ -12,6 +12,13 @@ type Response struct {
 	Error   string      `json:"error,omitempty"`
 }
 
+func HandleHealth(c *gin.Context)  {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"service": "garm",
+	})
+}
+
 func HandleSuccessWithDataResponse(c *gin.Context, message string, data interface{}, statusCode int) {
 	response := Response{
 		Success: true,

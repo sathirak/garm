@@ -37,7 +37,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-quit
-		log.Infof("Shutting down application...")
+		log.Infof("shutting down application")
 		os.Exit(0)
 	}()
 

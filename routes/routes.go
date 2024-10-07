@@ -8,7 +8,9 @@ import (
 func SetupRoutes(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 	{
-		auth := v1.Group("/auth")
-		auth.GET("/healthz", controllers.Healthz)
+		v1.GET("/healthz", controllers.Healthz)
+
+		user := v1.Group("/user")
+		user.POST("/", controllers.CreateUser)
 	}
 }

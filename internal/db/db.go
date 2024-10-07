@@ -30,13 +30,13 @@ func Initialize() {
 	db, err = sql.Open("postgres", psqlInfo)
 
 	if err != nil {
-		log.Panic("error pinging db", err)
+		log.Error("error pinging db", err)
 	}
 
 	err = db.Ping()
 
 	if err != nil {
-		log.Panic("error connecting to db", err)
+		log.Error("error connecting to db", err)
 	}
 
 	log.Info("db connection successful")
