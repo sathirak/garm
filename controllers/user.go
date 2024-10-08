@@ -5,24 +5,42 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/handlers"
-	"github.com/sathirak/garm/models"
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/services"
 )
 
-func CreateUser(c *gin.Context) {
-	var dto dto.User
-	var user models.User
+func SignUpEmailPassword(c *gin.Context) {
+	var signUpDto dto.SignUpEmailPassword
 
-	if err := c.ShouldBindJSON(&dto); err != nil {
+	if err := c.ShouldBindJSON(&signUpDto); err != nil {
 		handlers.HandleErrorResponse(c, "invalid request body", err, http.StatusBadRequest)
 		return
 	}
 
-	if err := services.CreateUser(&user, dto); err != nil {
+	user, err := services.SignUpEmailPassword(&signUpDto)
+
+	if err != nil {
 		handlers.HandleErrorResponse(c, "failed to create user", err, http.StatusInternalServerError)
 		return
 	}
 
-	handlers.HandleSuccessWithDataResponse(c, "user created", user, http.StatusOK)
+	handlers.HandleSuccessWithDataResponse(c, "user signed up", user, http.StatusOK)
+}
+
+func SignInEmailPassword(c *gin.Context) {
+	var signInDto dto.SignInEmailPassword
+
+	if err := c.ShouldBindJSON(&signInDto); err != nil {
+		handlers.HandleErrorResponse(c, "invalid request body", err, http.StatusBadRequest)
+		return
+	}
+
+	user, err := services.SignInEmailPassword(&signInDto)
+
+	if err != nil {
+		handlers.HandleErrorResponse(c, "failed to sign in user", err, http.StatusInternalServerError)
+		return
+	}
+
+	handlers.HandleSuccessWithDataResponse(c, "user signed in", user, http.StatusOK)
 }

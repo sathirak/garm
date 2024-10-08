@@ -5,9 +5,16 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+
+	"github.com/sathirak/garm/pkg/logger"
 	"github.com/sathirak/garm/repository"
 	"golang.org/x/crypto/argon2"
 )
+
+type HashSalt struct {
+	Hash []byte
+	Salt []byte
+}
 
 type Argon2idHash struct {
 	// time represents the number of
@@ -22,12 +29,6 @@ type Argon2idHash struct {
 	keyLen uint32
 	// saltLen the length of the salt used.
 	saltLen uint32
-}
-
-// HashSalt struct to hold the hash and salt.
-type HashSalt struct {
-	Hash []byte
-	Salt []byte
 }
 
 // NewArgon2idHash constructor function for
@@ -76,10 +77,14 @@ func (a *Argon2idHash) GenerateHash(password, salt []byte) (*HashSalt, error) {
 // Compare generated hash with store hash.
 func (a *Argon2idHash) Compare(hash, salt, password []byte) error {
 	// Generate hash for comparison.
+
 	hashSalt, err := a.GenerateHash(password, salt)
 	if err != nil {
+		logger.Get().Errorw(err.Error())
 		return err
 	}
+	logger.Get().Infow("initial", "hash", hash, "salt", salt)
+	logger.Get().Infow("hashSalt", "hash", hashSalt.Hash, "salt", hashSalt.Salt)
 	// Compare the generated hash with the stored hash.
 	// If they don't match return error.
 	if !bytes.Equal(hash, hashSalt.Hash) {
@@ -88,7 +93,7 @@ func (a *Argon2idHash) Compare(hash, salt, password []byte) error {
 	return nil
 }
 
-func CreatePassword(userID string, password string) error {
+func CreateEmailPassword(userID string, password string) error {
 
 	argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
 	hashSalt, err := argon.GenerateHash([]byte(password), nil)
@@ -96,5 +101,23 @@ func CreatePassword(userID string, password string) error {
 		return err
 	}
 	hash := base64.StdEncoding.EncodeToString(hashSalt.Hash)
-	return repository.CreatePasswordCredentails(userID, hash)
+	salt := base64.StdEncoding.EncodeToString(hashSalt.Salt)
+	return repository.CreatePasswordMethod(userID, salt, hash)
+}
+
+func ValidatePassword(hash string, salt string, password string) bool {
+    argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
+
+    decodedHash, err := base64.StdEncoding.DecodeString(hash)
+    if err != nil {
+        return false
+    }
+    
+    decodedSalt, err := base64.StdEncoding.DecodeString(salt)
+    if err != nil {
+        return false
+    }
+
+    err = argon.Compare(decodedHash, decodedSalt, []byte(password))
+    return err == nil
 }

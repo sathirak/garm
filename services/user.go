@@ -7,27 +7,27 @@ import (
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/pkg/ksuid"
 	"github.com/sathirak/garm/repository"
-	"github.com/sathirak/garm/services/methods"
 )
 
-func CreateUser(user *models.User, dto dto.User) error {
+func CreateUser(dto *dto.UserInit) (*models.UserCreate, error) {
 
-	*user = models.User{
+	user := models.UserCreate{
 		ID:            ksuid.Gen().String(),
-		FirstName:     dto.FirstName,
-		LastName:      dto.LastName,
-		Email:         dto.Email,
 		VerifiedEmail: false,
-		Locale:        dto.Locale,
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
+		User: models.User{
+			Locale:    dto.Locale,
+			FirstName: dto.FirstName,
+			LastName:  dto.LastName,
+			Email:     dto.Email},
 	}
 
-	err := repository.CreateUser(user)
+	err := repository.CreateUser(&user)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return methods.CreatePassword(user.ID, "password")
+	return &user, nil
 }
