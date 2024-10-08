@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/handlers"
+	"github.com/sathirak/garm/internal/jwt"
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/pkg/logger"
 	"github.com/sathirak/garm/repository"
@@ -31,6 +32,14 @@ func SignUpEmailPassword(c *gin.Context) {
 	if err != nil {
 		log.Error(err)
 		handlers.HandleErrorResponse(c, "failed to create user", http.StatusInternalServerError)
+		return
+	}
+
+	err = jwt.Set(c, user)
+
+	if err != nil {
+		log.Error(err)
+		handlers.HandleErrorResponse(c, "failed to set auth headers", http.StatusInternalServerError)
 		return
 	}
 
@@ -62,6 +71,14 @@ func SignInEmailPassword(c *gin.Context) {
 
 	if user == nil {
 		handlers.HandleSuccessResponse(c, "invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	err = jwt.Set(c, user)
+
+	if err != nil {
+		log.Error(err)
+		handlers.HandleErrorResponse(c, "failed to set auth headers", http.StatusInternalServerError)
 		return
 	}
 

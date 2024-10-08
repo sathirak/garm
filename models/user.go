@@ -13,10 +13,16 @@ type User struct {
 }
 
 // Create scope
-type UserCreate struct {
+type UserMeta struct {
 	User
 	ID            string    `json:"id"`
 	VerifiedEmail bool      `json:"verified_email"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
+}
+
+type UserJWT struct {
+	User
+	ID        string    `json:"id"`
+	ExpiredAt time.Time `json:"expired_at"`
 }

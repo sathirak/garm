@@ -5,4 +5,6 @@ run: build
 	@./bin/garm
 
 dev:
-	@go run main.go
+	@clear
+	@go build -o bin/garm
+	@./bin/garm

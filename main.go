@@ -31,6 +31,7 @@ func main() {
 
 	r := gin.New()
 	r.Use(middlewares.Logger())
+	r.Use(middlewares.ApiKeyAuth())
 	routes.SetupRoutes(r)
 
 	quit := make(chan os.Signal, 1)

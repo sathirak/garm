@@ -9,9 +9,9 @@ import (
 	"github.com/sathirak/garm/repository"
 )
 
-func CreateUser(dto *dto.UserInit) (*models.UserCreate, error) {
+func CreateUser(dto *dto.UserInit) (*models.UserMeta, error) {
 
-	user := models.UserCreate{
+	user := models.UserMeta{
 		ID:            ksuid.Gen().String(),
 		VerifiedEmail: false,
 		CreatedAt:     time.Now(),

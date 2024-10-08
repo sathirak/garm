@@ -45,7 +45,7 @@ func CheckUserAvailablityIdEmail(id, email string) bool {
 	return true
 }
 
-func CreateUser(user *models.UserCreate) error {
+func CreateUser(user *models.UserMeta) error {
 	conn := db.Get()
 
 	row := conn.QueryRow(
@@ -74,6 +74,30 @@ func GetUser(id string) (*models.User, error) {
 		&user.LastName,
 		&user.Email,
 		&user.Locale,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func GetUserMeta(id string) (*models.UserMeta, error) {
+	conn := db.Get()
+
+	var user models.UserMeta
+
+	err := conn.QueryRow(`
+		SELECT first_name, last_name, email, locale, id, verified_email, created_at, updated_at FROM auth_users WHERE id = $1;`, id).Scan(
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Locale,
+		&user.ID,
+		&user.VerifiedEmail,
+		&user.CreatedAt,
+		&user.UpdatedAt,
 	)
 
 	if err != nil {
