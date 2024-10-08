@@ -39,7 +39,7 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.User, erro
 		return nil, err
 	}
 
-	isValid := methods.ValidatePassword(credentails.AuthSecret, credentails.AuthIdentifier, signInDto.Password)
+	isValid := methods.ValidateEmailPassword(credentails.AuthSecret, credentails.AuthIdentifier, signInDto.Password)
 
 	logger.Get().Info("is valid: ", isValid)
 	if !isValid {

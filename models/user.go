@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Profile scope
 type User struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -11,6 +12,7 @@ type User struct {
 	Locale    string `json:"locale"`
 }
 
+// Create scope
 type UserCreate struct {
 	User
 	ID            string    `json:"id"`

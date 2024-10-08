@@ -11,6 +11,8 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
+// The full code for authentication using email and password
+
 type HashSalt struct {
 	Hash []byte
 	Salt []byte
@@ -83,8 +85,6 @@ func (a *Argon2idHash) Compare(hash, salt, password []byte) error {
 		logger.Get().Errorw(err.Error())
 		return err
 	}
-	logger.Get().Infow("initial", "hash", hash, "salt", salt)
-	logger.Get().Infow("hashSalt", "hash", hashSalt.Hash, "salt", hashSalt.Salt)
 	// Compare the generated hash with the stored hash.
 	// If they don't match return error.
 	if !bytes.Equal(hash, hashSalt.Hash) {
@@ -105,19 +105,19 @@ func CreateEmailPassword(userID string, password string) error {
 	return repository.CreatePasswordMethod(userID, salt, hash)
 }
 
-func ValidatePassword(hash string, salt string, password string) bool {
-    argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
+func ValidateEmailPassword(hash string, salt string, password string) bool {
+	argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
 
-    decodedHash, err := base64.StdEncoding.DecodeString(hash)
-    if err != nil {
-        return false
-    }
-    
-    decodedSalt, err := base64.StdEncoding.DecodeString(salt)
-    if err != nil {
-        return false
-    }
+	decodedHash, err := base64.StdEncoding.DecodeString(hash)
+	if err != nil {
+		return false
+	}
 
-    err = argon.Compare(decodedHash, decodedSalt, []byte(password))
-    return err == nil
+	decodedSalt, err := base64.StdEncoding.DecodeString(salt)
+	if err != nil {
+		return false
+	}
+
+	err = argon.Compare(decodedHash, decodedSalt, []byte(password))
+	return err == nil
 }
