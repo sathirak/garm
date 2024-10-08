@@ -6,10 +6,10 @@ import (
 	"github.com/sathirak/garm/pkg/logger"
 	"github.com/sathirak/garm/repository"
 
-	"github.com/sathirak/garm/services/methods"
+	"github.com/sathirak/garm/services/recipes"
 )
 
-func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserCreate, error) {
+func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.User, error) {
 
 	userDto := &dto.UserInit{
 		FirstName: signUpDto.FirstName,
@@ -24,11 +24,11 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserCreate
 		return nil, err
 	}
 
-	if err = methods.CreateEmailPassword(user.ID, signUpDto.Password); err != nil {
+	if err = recipes.CreateEmailPassword(user.ID, signUpDto.Password); err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &user.User, nil
 }
 
 func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.User, error) {
@@ -39,7 +39,7 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.User, erro
 		return nil, err
 	}
 
-	isValid := methods.ValidateEmailPassword(credentails.AuthSecret, credentails.AuthIdentifier, signInDto.Password)
+	isValid := recipes.ValidateEmailPassword(credentails.AuthSecret, credentails.AuthIdentifier, signInDto.Password)
 
 	logger.Get().Info("is valid: ", isValid)
 	if !isValid {

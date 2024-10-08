@@ -2,26 +2,21 @@ package handlers
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/sathirak/garm/models"
 )
 
-type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   string      `json:"error,omitempty"`
-}
-
-func HandleHealth(c *gin.Context)  {
+func HandleHealth(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
+		"status":  "ok",
 		"service": "garm",
 	})
 }
 
 func HandleSuccessWithDataResponse(c *gin.Context, message string, data interface{}, statusCode int) {
-	response := Response{
-		Success: true,
+	response := models.Response{
+		Status:  "sucess",
 		Message: message,
 		Data:    data,
 	}
@@ -30,19 +25,18 @@ func HandleSuccessWithDataResponse(c *gin.Context, message string, data interfac
 }
 
 func HandleSuccessResponse(c *gin.Context, message string, statusCode int) {
-	response := Response{
-		Success: true,
+	response := models.Response{
+		Status:  "success",
 		Message: message,
 	}
 
 	c.JSON(statusCode, response)
 }
 
-func HandleErrorResponse(c *gin.Context, message string, error error, statusCode int) {
-	response := Response{
-		Success: false,
+func HandleErrorResponse(c *gin.Context, message string, statusCode int) {
+	response := models.Response{
+		Status:  "error",
 		Message: message,
-		Error:   error.Error(),
 	}
 
 	c.JSON(statusCode, response)
@@ -59,8 +53,8 @@ func NewUnauthorizedError() *UnauthorizedError {
 }
 
 func HandleUnauthorisedResponse(c *gin.Context) {
-	response := Response{
-		Success: false,
+	response := models.Response{
+		Status:  "error",
 		Message: "Unauthorised",
 		Error:   NewUnauthorizedError().Error(),
 	}
