@@ -7,16 +7,22 @@ import (
 	"github.com/sathirak/garm/handlers"
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/pkg/logger"
+	"github.com/sathirak/garm/repository"
 	"github.com/sathirak/garm/services"
 )
 
 func SignUpEmailPassword(c *gin.Context) {
 	var signUpDto dto.SignUpEmailPassword
-	log := logger.Get();
+	log := logger.Get()
 
 	if err := c.ShouldBindJSON(&signUpDto); err != nil {
 		log.Error(err)
 		handlers.HandleErrorResponse(c, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if !repository.CheckUserAvailablityEmail(signUpDto.Email) {
+		handlers.HandleSuccessResponse(c, "email already in use", http.StatusConflict)
 		return
 	}
 
@@ -33,11 +39,16 @@ func SignUpEmailPassword(c *gin.Context) {
 
 func SignInEmailPassword(c *gin.Context) {
 	var signInDto dto.SignInEmailPassword
-	log := logger.Get();
+	log := logger.Get()
 
 	if err := c.ShouldBindJSON(&signInDto); err != nil {
 		log.Error(err)
-		handlers.HandleErrorResponse(c, "invalid request body", http.StatusBadRequest)
+		handlers.HandleSuccessResponse(c, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if repository.CheckUserAvailablityEmail(signInDto.Email) {
+		handlers.HandleErrorResponse(c, "email not found", http.StatusConflict)
 		return
 	}
 
