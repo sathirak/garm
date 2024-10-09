@@ -6,18 +6,19 @@ import (
 	"github.com/sathirak/garm/repository"
 )
 
-func Set(c *gin.Context, user *models.UserMeta) error {
-	token, err := JWTGen(user.ID)
+func Set(c *gin.Context, userId string) error {
+	bearerToken, err := JWTGen(userId)
 	if err != nil {
 		return err
 	}
-	c.Header("Authorization", token)
+	c.Header("Authorization", bearerToken)
 	return nil
 }
 
 func Get(c *gin.Context) (*models.UserJWT, error) {
-	token := c.GetHeader("Authorization")
-	jwtData, err := JWTParse(token)
+	bearerToken := c.GetHeader("Authorization")
+
+	jwtData, err := JWTParse(bearerToken)
 
 	if err != nil {
 		return nil, err
@@ -30,10 +31,19 @@ func Get(c *gin.Context) (*models.UserJWT, error) {
 	}
 
 	userJwt := models.UserJWT{
-		User:      models.User{FirstName: user.FirstName, LastName: user.LastName, Email: user.Email, Locale: user.Locale},
+		User:      models.User{
+			FirstName: user.FirstName, 
+			LastName: user.LastName, 
+			Email: user.Email, 
+			Locale: user.Locale,
+		},
 		ID:        jwtData.ID,
 		ExpiredAt: jwtData.ExpiredAt,
 	}
 
 	return &userJwt, nil
+}
+
+func Delete(c *gin.Context) {
+	c.Request.Header.Del("Authorization")	
 }

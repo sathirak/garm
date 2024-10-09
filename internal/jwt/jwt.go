@@ -7,31 +7,37 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var secretKey = []byte("secret-key")
-
 type JWTData struct {
-	ID        string 
+	ID        string
 	ExpiredAt time.Time
 }
 
 func JWTGen(id string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": id,
-		"exp": time.Now().Add(24 * time.Hour).Unix(),
+		"id":  id,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
-	tokenString, err := token.SignedString(secretKey)
+	tokenString, err := token.SignedString(GetKey())
 	if err != nil {
 		return "", err
 	}
 
-	return tokenString, nil
+	bearerToken := "Bearer " + tokenString
+
+	return bearerToken, nil
 }
 
-func JWTParse(tokenString string) (jwtData *JWTData, err error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return secretKey, nil
+func JWTParse(bearerToken string) (jwtData *JWTData, err error) {
+
+	prefix := "Bearer "
+	if !(len(bearerToken) > len(prefix) && bearerToken[:len(prefix)] == prefix) {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	token, err := jwt.Parse(bearerToken[len(prefix):], func(token *jwt.Token) (interface{}, error) {
+		return GetKey(), nil
 	})
 
 	if err != nil {
@@ -51,7 +57,6 @@ func JWTParse(tokenString string) (jwtData *JWTData, err error) {
 	expiredAt := time.Unix(int64(exp), 0)
 
 	jwtData = &JWTData{ID: id, ExpiredAt: expiredAt}
-	fmt.Printf("Username: %s, Exp: %v\n", id, exp)
 
 	return jwtData, nil
 }

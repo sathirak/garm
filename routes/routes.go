@@ -10,7 +10,7 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		auth := v1.Group("/auth")
 
-		auth.GET("/", controllers.Validate)
+		auth.GET("/", controllers.Authenticate)
 		auth.GET("/healthz", controllers.Healthz)
 		auth.POST("/email-password/sign-up", controllers.SignUpEmailPassword)
 		auth.POST("/email-password/sign-in", controllers.SignInEmailPassword)

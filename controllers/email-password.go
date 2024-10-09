@@ -35,7 +35,7 @@ func SignUpEmailPassword(c *gin.Context) {
 		return
 	}
 
-	err = jwt.Set(c, user)
+	err = jwt.Set(c, user.ID)
 
 	if err != nil {
 		log.Error(err)
@@ -74,7 +74,7 @@ func SignInEmailPassword(c *gin.Context) {
 		return
 	}
 
-	err = jwt.Set(c, user)
+	err = jwt.Set(c, user.ID)
 
 	if err != nil {
 		log.Error(err)

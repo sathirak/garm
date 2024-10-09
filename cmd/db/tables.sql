@@ -9,7 +9,7 @@ CREATE TABLE auth_users (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE auth_methods (
+CREATE TABLE auth_methods ( 
     id SERIAL PRIMARY KEY,
     method_name VARCHAR(50) UNIQUE
 );

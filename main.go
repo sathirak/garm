@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/internal/config"
+	"github.com/sathirak/garm/internal/jwt"
 	"github.com/sathirak/garm/middlewares"
 	"github.com/sathirak/garm/routes"
 
@@ -28,6 +29,8 @@ func main() {
 	}
 
 	db.Initialize()
+
+	jwt.Initialize()
 
 	r := gin.New()
 	r.Use(middlewares.Logger())
