@@ -19,7 +19,7 @@ func SignUpEmailPassword(c *gin.Context) {
 		return
 	}
 
-	if !repository.CheckUserAvailablityEmail(signUpDto.Email) {
+	if !repository.IsEmailAvailable(signUpDto.Email) {
 		handlers.HandleErrorResponse(c, "email already in use", http.StatusOK)
 		return
 	}
@@ -49,7 +49,7 @@ func SignInEmailPassword(c *gin.Context) {
 		return
 	}
 
-	if repository.CheckUserAvailablityEmail(signInDto.Email) {
+	if repository.IsEmailAvailable(signInDto.Email) {
 		handlers.HandleErrorResponse(c, "email not found", http.StatusConflict)
 		return
 	}

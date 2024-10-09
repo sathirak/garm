@@ -15,17 +15,16 @@ func Get() *sql.DB {
 	return db
 }
 
-func Close() error {
+func Close() {
 	log := logger.Get()
 
 	err := db.Close()
 
 	if err != nil {
 		log.Errorw("shutdown", "package", "db", "status", "bad", "error", err.Error())
-		return err
+		return
 	}
 	log.Infow("shutdown", "package", "db", "status", "ok")
-	return nil
 }
 
 func Initialize() {

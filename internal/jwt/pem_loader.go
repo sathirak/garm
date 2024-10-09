@@ -33,5 +33,5 @@ func Initialize() {
 
 	key = block.Bytes
 
-	log.Infof("garm.pem loaded")
+	log.Errorw("startup", "package", "jwt", "status", "ok")
 }

@@ -13,7 +13,7 @@ type JWT struct {
 	ExpiredAt time.Time
 }
 
-func JWTGen(id string) (string, error) {
+func Generate(id string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  id,
@@ -30,7 +30,7 @@ func JWTGen(id string) (string, error) {
 	return bearerToken, nil
 }
 
-func JWTParse(bearerToken string) (jwtData *JWT, err error) {
+func Parse(bearerToken string) (jwtData *JWT, err error) {
 
 	prefix := "Bearer "
 	if !(len(bearerToken) > len(prefix) && bearerToken[:len(prefix)] == prefix) {

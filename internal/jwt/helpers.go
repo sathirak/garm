@@ -5,7 +5,7 @@ import (
 )
 
 func Set(c *gin.Context, userId string) error {
-	bearerToken, err := JWTGen(userId)
+	bearerToken, err := Generate(userId)
 	if err != nil {
 		return err
 	}
@@ -16,7 +16,7 @@ func Set(c *gin.Context, userId string) error {
 func Get(c *gin.Context) (*JWT, error) {
 	bearerToken := c.GetHeader("Authorization")
 
-	jwtData, err := JWTParse(bearerToken)
+	jwtData, err := Parse(bearerToken)
 
 	if err != nil {
 		return nil, err

@@ -29,7 +29,7 @@ func Initialize() {
 	log := logger.Get()
 
 	if err := ensureRequiredEnvsAreAvailable(); err != nil {
-		log.Errorw("startup", "package", "config", "status", "bad", "error", err.Error())	
+		log.Errorw("startup", "package", "config", "status", "bad", "error", err.Error())
 		return
 	}
 
