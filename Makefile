@@ -6,5 +6,12 @@ run: build
 
 dev:
 	@clear
+	@goimports -w .
+	@go vet
 	@go build -o bin/garm
 	@./bin/garm
+
+lint:
+	@goimports -w .
+	@go vet
+	@go build -o bin/garm

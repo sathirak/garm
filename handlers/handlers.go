@@ -53,7 +53,6 @@ func HandleErrorWithErrorResponse(c *gin.Context, message string, statusCode int
 	c.JSON(statusCode, response)
 }
 
-
 type UnauthorizedError struct{}
 
 func (e *UnauthorizedError) Error() string {

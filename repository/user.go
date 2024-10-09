@@ -8,7 +8,7 @@ import (
 )
 
 func CheckUserAvailablityEmail(email string) bool {
-	// is email is not in table returns true
+	// If email is not in table returns true
 	conn := db.Get()
 
 	var existingEmail string

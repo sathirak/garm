@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/sathirak/garm/pkg/logger"
 	"github.com/spf13/viper"
-
 )
 
 var config Config
@@ -35,9 +35,10 @@ func Initialize() (*Config, error) {
 
 	config = Config{
 		App: AppConfig{
-			Env:      getEnv("ENV", "development"),
-			Port:     getEnv("PORT", "8080"),
-			ApiToken: getEnv("X_API_TOKEN", ""),
+			Env:        getEnv("ENV", "development"),
+			Port:       getEnv("PORT", "8080"),
+			ApiToken:   getEnv("X_API_TOKEN", ""),
+			JWTExpTime: time.Hour * 24 * 30,
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST"),

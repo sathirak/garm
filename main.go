@@ -32,7 +32,12 @@ func main() {
 
 	jwt.Initialize()
 
+	if cfg.App.Env == "production" {
+		gin.SetMode(gin.ReleaseMode)
+
+	}
 	r := gin.New()
+
 	r.Use(middlewares.Logger())
 	r.Use(middlewares.ApiKeyAuth())
 	routes.SetupRoutes(r)

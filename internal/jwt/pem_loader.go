@@ -9,7 +9,7 @@ import (
 
 var key []byte
 
-//openssl ecparam -name prime256v1 -genkey -noout -out ec_private_key.pem
+//openssl ecparam -name prime256v1 -genkey -noout -out garm.pem
 // openssl ec -in ec_private_key.pem -text -noout
 
 func GetKey() []byte {
@@ -22,16 +22,16 @@ func Initialize() {
 
 	pemData, err := os.ReadFile(file)
 	if err != nil {
-		log.Errorf("Error reading PEM file: %v", err)
+		log.Errorf("error reading .pem file: %v", err)
 	}
 
 	block, _ := pem.Decode(pemData)
 	if block == nil {
-		log.Errorf("Failed to parse PEM block")
+		log.Errorf("failed to parse .pem block")
 		return
 	}
 
 	key = block.Bytes
 
-	log.Infof("private key for garm loaded")
+	log.Infof("garm.pem loaded")
 }

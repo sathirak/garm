@@ -17,18 +17,20 @@ func Logger() gin.HandlerFunc {
 		userAgent := c.Request.Header.Get("User-Agent")
 		path := c.Request.URL.Path
 
-		log.Infow("incoming request", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent)
+		log.Infow(">>", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent)
 		c.Next()
 
 		end := time.Now()
 		latency := end.Sub(start)
 
 		statusCode := c.Writer.Status()
+		err := c.Errors.Last()
 
-		if statusCode >= 400 {
-			log.Errorw(c.Errors.String(), "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "latency", latency, "status", statusCode)
+		if err != nil {
+			errorString := c.Errors.Last().Error()
+			log.Errorw(errorString, "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "latency", latency, "status", statusCode)
 		} else {
-			log.Infow("outgoing request", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "latency", latency, "status", statusCode)
+			log.Infow("<<", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "latency", latency, "status", statusCode)
 
 		}
 	}

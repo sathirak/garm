@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 type DatabaseConfig struct {
 	Host     string
 	Port     string
@@ -9,9 +11,10 @@ type DatabaseConfig struct {
 }
 
 type AppConfig struct {
-	Port     string
-	ApiToken string
-	Env      string
+	Port       string
+	ApiToken   string
+	Env        string
+	JWTExpTime time.Duration
 }
 
 type Config struct {

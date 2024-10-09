@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/handlers"
+	"github.com/sathirak/garm/internal/config"
 	"github.com/sathirak/garm/internal/jwt"
 	"github.com/sathirak/garm/repository"
 )
@@ -32,7 +33,7 @@ func Authenticate(c *gin.Context) {
 		return
 	}
 
-	if time.Until(token.ExpiredAt) < (time.Hour * 24 * 15) {
+	if time.Until(token.ExpiredAt) < (config.Get().App.JWTExpTime / 2) {
 
 		err = jwt.Set(c, token.ID)
 

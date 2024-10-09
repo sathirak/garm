@@ -31,5 +31,5 @@ func Get(c *gin.Context) (*JWT, error) {
 }
 
 func Delete(c *gin.Context) {
-	c.Request.Header.Del("Authorization")	
+	c.Request.Header.Del("Authorization")
 }

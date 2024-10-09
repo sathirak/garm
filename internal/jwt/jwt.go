@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sathirak/garm/internal/config"
 )
 
 type JWT struct {
-	ID string
+	ID        string
 	ExpiredAt time.Time
 }
 
@@ -16,7 +17,7 @@ func JWTGen(id string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  id,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+		"exp": time.Now().Add(config.Get().App.JWTExpTime).Unix(),
 	})
 
 	tokenString, err := token.SignedString(GetKey())
