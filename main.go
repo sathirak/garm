@@ -16,26 +16,18 @@ import (
 )
 
 func main() {
-	log, err := logger.Initialize()
-
-	if err != nil {
-		log.Fatalf("error initializing logger")
-	}
-
-	cfg, err := config.Initialize()
-
-	if err != nil {
-		log.Fatalf("error initializing environment config")
-	}
-
+	logger.Initialize()
+	config.Initialize()
 	db.Initialize()
-
 	jwt.Initialize()
+
+	log := logger.Get()
+	cfg := config.Get()
 
 	if cfg.App.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
-
 	}
+
 	r := gin.New()
 
 	r.Use(middlewares.Logger())
@@ -46,11 +38,12 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-quit
-		log.Infof("shutting down application")
+		db.Close()
+		log.Infow("shutdown", "package", "garm", "status", "ok")
 		os.Exit(0)
 	}()
 
-	err = r.Run(":" + cfg.App.Port)
+	err := r.Run(":" + cfg.App.Port)
 	if err != nil {
 		log.Error(err.Error())
 	}

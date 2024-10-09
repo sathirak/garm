@@ -22,12 +22,12 @@ func Initialize() {
 
 	pemData, err := os.ReadFile(file)
 	if err != nil {
-		log.Errorf("error reading .pem file: %v", err)
+		log.Errorw("startup", "package", "jwt", "status", "bad", "error", err.Error())
 	}
 
 	block, _ := pem.Decode(pemData)
 	if block == nil {
-		log.Errorf("failed to parse .pem block")
+		log.Errorw("startup", "package", "jwt", "status", "bad", "error", "failed to decode pem block")
 		return
 	}
 

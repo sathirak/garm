@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -26,11 +25,12 @@ func Get() *Config {
 	return &config
 }
 
-func Initialize() (*Config, error) {
+func Initialize() {
 	log := logger.Get()
 
 	if err := ensureRequiredEnvsAreAvailable(); err != nil {
-		return nil, err
+		log.Errorw("startup", "package", "config", "status", "bad", "error", err.Error())	
+		return
 	}
 
 	config = Config{
@@ -49,8 +49,7 @@ func Initialize() (*Config, error) {
 		},
 	}
 
-	log.Info("config loaded successfully!")
-	return &config, nil
+	log.Infow("startup", "package", "config", "status", "ok")
 }
 
 func ensureRequiredEnvsAreAvailable() error {
@@ -64,9 +63,10 @@ func ensureRequiredEnvsAreAvailable() error {
 
 	for _, env := range requiredEnvs {
 		if getEnv(env) == "" {
-			return fmt.Errorf("error loading .env var %s", env)
+			log.Errorw("startup", "package", "config:env", env, getEnv(env), "status", "bad", "error", "error loading required env")
+			return nil
 		} else {
-			log.Infow("env var", env, getEnv(env))
+			log.Infow("startup", "package", "config:env", env, getEnv(env), "status", "ok")
 		}
 	}
 	return nil

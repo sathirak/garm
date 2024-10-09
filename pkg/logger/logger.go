@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"fmt"
+
 	"go.uber.org/zap"
 )
 
@@ -10,16 +12,16 @@ func Get() *zap.SugaredLogger {
 	return logger
 }
 
-func Initialize() (*zap.SugaredLogger, error) {
-	baseLogger, err := zap.NewProduction()
+func Initialize() {
+	base, err := zap.NewProduction()
 
 	if err != nil {
-		return nil, err
+		fmt.Printf("error initializing logger:\n %v", err)
+		return
 	}
 
-	logger = baseLogger.Sugar()
+	logger = base.Sugar()
+	logger.Infow("startup", "package", "logger", "status", "ok")
 
-	defer baseLogger.Sync()
-
-	return logger, nil
+	defer base.Sync()
 }

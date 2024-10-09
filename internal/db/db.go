@@ -15,6 +15,19 @@ func Get() *sql.DB {
 	return db
 }
 
+func Close() error {
+	log := logger.Get()
+
+	err := db.Close()
+
+	if err != nil {
+		log.Errorw("shutdown", "package", "db", "status", "bad", "error", err.Error())
+		return err
+	}
+	log.Infow("shutdown", "package", "db", "status", "ok")
+	return nil
+}
+
 func Initialize() {
 
 	log := logger.Get()
@@ -30,14 +43,14 @@ func Initialize() {
 	db, err = sql.Open("postgres", psqlInfo)
 
 	if err != nil {
-		log.Error("error pinging db", err)
+		log.Errorw("startup", "package", "db", "status", "bad", "error", err.Error())
 	}
 
 	err = db.Ping()
 
 	if err != nil {
-		log.Error("error connecting to db", err)
+		log.Errorw("startup", "package", "db", "status", "bad", "error", err.Error())
 	}
 
-	log.Info("db connection successful")
+	log.Infow("startup", "package", "db", "status", "ok")
 }
