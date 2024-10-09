@@ -1,7 +1,16 @@
 package ksuid
 
-import "github.com/segmentio/ksuid"
+import (
+	"github.com/sathirak/garm/repository"
+	"github.com/segmentio/ksuid"
+)
 
 func Gen() ksuid.KSUID {
-	return ksuid.New()
+	for {
+		id := ksuid.New()
+
+		if repository.IsIDAvailable(id.String()) {
+			return id
+		}
+	}
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/sathirak/garm/models"
 )
 
-func CheckUserAvailablityEmail(email string) bool {
-	// is email is not in table returns true
+func IsEmailAvailable(email string) bool {
+	// If email is not in table returns true
 	conn := db.Get()
 
 	var existingEmail string
@@ -25,27 +25,24 @@ func CheckUserAvailablityEmail(email string) bool {
 	return false
 }
 
-func CheckUserAvailablityIdEmail(id, email string) bool {
+func IsIDAvailable(id string) bool {
 	conn := db.Get()
 
 	var existingID string
-	var existingEmail string
 
 	err := conn.QueryRow(
-		`SELECT id, email FROM auth_users WHERE id = $1 OR email = $2;`,
-		id, email).Scan(&existingID, &existingEmail)
+		`SELECT id FROM auth_users WHERE id = $1;`,
+		id).Scan(&existingID)
 
-	if err != nil && err != sql.ErrNoRows {
-		return false
+	if err == sql.ErrNoRows {
+		return err == sql.ErrNoRows
 	}
 
-	if existingID != "" || existingEmail != "" {
-		return false
-	}
-	return true
+	// If there's an error (other than no rows) or if an id is found, it's not available
+	return false
 }
 
-func CreateUser(user *models.UserCreate) error {
+func CreateUser(user *models.UserMeta) error {
 	conn := db.Get()
 
 	row := conn.QueryRow(
@@ -63,17 +60,21 @@ func CreateUser(user *models.UserCreate) error {
 	return nil
 }
 
-func GetUser(id string) (*models.User, error) {
+func GetUserMeta(id string) (*models.UserMeta, error) {
 	conn := db.Get()
 
-	var user models.User
+	var user models.UserMeta
 
 	err := conn.QueryRow(`
-		SELECT first_name, last_name, email, locale FROM auth_users WHERE id = $1;`, id).Scan(
+		SELECT first_name, last_name, email, locale, id, verified_email, created_at, updated_at FROM auth_users WHERE id = $1;`, id).Scan(
 		&user.FirstName,
 		&user.LastName,
 		&user.Email,
 		&user.Locale,
+		&user.ID,
+		&user.VerifiedEmail,
+		&user.CreatedAt,
+		&user.UpdatedAt,
 	)
 
 	if err != nil {

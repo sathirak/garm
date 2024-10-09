@@ -5,4 +5,13 @@ run: build
 	@./bin/garm
 
 dev:
-	@go run main.go
+	@clear
+	@goimports -w .
+	@go vet
+	@go build -o bin/garm
+	@./bin/garm
+
+lint:
+	@goimports -w .
+	@go vet
+	@go build -o bin/garm

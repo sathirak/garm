@@ -9,7 +9,7 @@ import (
 	"github.com/sathirak/garm/services/recipes"
 )
 
-func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.User, error) {
+func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, error) {
 
 	userDto := &dto.UserInit{
 		FirstName: signUpDto.FirstName,
@@ -28,10 +28,10 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.User, erro
 		return nil, err
 	}
 
-	return &user.User, nil
+	return user, nil
 }
 
-func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.User, error) {
+func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, error) {
 
 	credentails, err := repository.GetCredentialsEmailPassword(signInDto.Email)
 
@@ -46,7 +46,7 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.User, erro
 		return nil, nil
 	}
 
-	user, err := repository.GetUser(credentails.AuthUserID)
+	user, err := repository.GetUserMeta(credentails.AuthUserID)
 
 	if err != nil {
 		return nil, err
