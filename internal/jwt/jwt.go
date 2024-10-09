@@ -7,8 +7,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type JWTData struct {
-	ID        string
+type JWT struct {
+	ID string
 	ExpiredAt time.Time
 }
 
@@ -29,7 +29,7 @@ func JWTGen(id string) (string, error) {
 	return bearerToken, nil
 }
 
-func JWTParse(bearerToken string) (jwtData *JWTData, err error) {
+func JWTParse(bearerToken string) (jwtData *JWT, err error) {
 
 	prefix := "Bearer "
 	if !(len(bearerToken) > len(prefix) && bearerToken[:len(prefix)] == prefix) {
@@ -56,7 +56,7 @@ func JWTParse(bearerToken string) (jwtData *JWTData, err error) {
 	exp := claims["exp"].(float64)
 	expiredAt := time.Unix(int64(exp), 0)
 
-	jwtData = &JWTData{ID: id, ExpiredAt: expiredAt}
+	jwtData = &JWT{ID: id, ExpiredAt: expiredAt}
 
 	return jwtData, nil
 }

@@ -2,8 +2,6 @@ package jwt
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/models"
-	"github.com/sathirak/garm/repository"
 )
 
 func Set(c *gin.Context, userId string) error {
@@ -15,7 +13,7 @@ func Set(c *gin.Context, userId string) error {
 	return nil
 }
 
-func Get(c *gin.Context) (*models.UserJWT, error) {
+func Get(c *gin.Context) (*JWT, error) {
 	bearerToken := c.GetHeader("Authorization")
 
 	jwtData, err := JWTParse(bearerToken)
@@ -24,19 +22,7 @@ func Get(c *gin.Context) (*models.UserJWT, error) {
 		return nil, err
 	}
 
-	user, err := repository.GetUser(jwtData.ID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	userJwt := models.UserJWT{
-		User:      models.User{
-			FirstName: user.FirstName, 
-			LastName: user.LastName, 
-			Email: user.Email, 
-			Locale: user.Locale,
-		},
+	userJwt := JWT{
 		ID:        jwtData.ID,
 		ExpiredAt: jwtData.ExpiredAt,
 	}

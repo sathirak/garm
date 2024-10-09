@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Profile scope
+// profile scope
 type User struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -12,7 +12,7 @@ type User struct {
 	Locale    string `json:"locale"`
 }
 
-// Create scope
+// full user scope
 type UserMeta struct {
 	User
 	ID            string    `json:"id"`
@@ -21,8 +21,8 @@ type UserMeta struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
-type UserJWT struct {
-	User
-	ID        string    `json:"id"`
-	ExpiredAt time.Time `json:"expired_at"`
+// public user scope
+type UserPublic struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 }

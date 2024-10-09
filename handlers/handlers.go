@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/models"
+	"github.com/sathirak/garm/pkg/logger"
 )
 
 func HandleHealth(c *gin.Context) {
@@ -41,6 +42,17 @@ func HandleErrorResponse(c *gin.Context, message string, statusCode int) {
 
 	c.JSON(statusCode, response)
 }
+
+func HandleErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
+	logger.Get().Error(err.Error())
+	response := models.Response{
+		Status:  "error",
+		Message: message,
+	}
+
+	c.JSON(statusCode, response)
+}
+
 
 type UnauthorizedError struct{}
 
