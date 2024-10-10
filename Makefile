@@ -20,6 +20,9 @@ dev:
 	@go build -o bin/garm
 	@./bin/garm
 
+.PHONY: lint-ci
+lint: golangci-lint tidy-lint license-lint
+
 lint:
 	@staticcheck .
 	@goimports -w .
