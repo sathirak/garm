@@ -8,10 +8,12 @@ import (
 	"github.com/sathirak/garm/pkg/logger"
 )
 
-func HandleHealth(c *gin.Context) {
+
+
+func HandleHealth(c *gin.Context, details []models.ServiceStatus) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "ok",
-		"service": "garm",
+		"details": details,
 	})
 }
 
