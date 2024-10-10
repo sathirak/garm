@@ -1,4 +1,4 @@
-name: Go Lint
+name: Go
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: ["1.22.x", "1.23.x"]
+        go: ["1.23.x"]
         include:
         - go: 1.23.x
 
@@ -60,5 +60,8 @@ jobs:
     - run: make lint-ci
       name: Lint
 
-    - name: vulncheck
-      run: make vulncheck
+    - uses: golang/govulncheck-action@v1
+      name: vulncheck
+      with:
+          go-version-input: 1.23.x
+          go-package: ./...
