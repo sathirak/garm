@@ -1,38 +1,55 @@
-# Directory of makefile
+# Directory of
+SERVICE = garm
+
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-export GOBIN ?= $(PROJECT_ROOT)bin
+export GOBIN ?= $(PROJECT_ROOT)/bin
 export PATH := $(GOBIN):$(PATH)
 
 MODULE_DIRS = .
 
 build:
-	@go build -o bin/garm
+	@go build -o bin/$(SERVICE)
 
 run: build
-	@./bin/garm
+	@./bin/$(SERVICE)
 
 dev:
 	@clear
 	@staticcheck .
 	@goimports -w .
 	@go vet
-	@go build -o bin/garm
-	@./bin/garm
+	@go build -o bin/$(SERVICE)
+	@./bin/$(SERVICE)
 
 .PHONY: lint-ci
-lint: golangci-lint tidy-lint license-lint
+lint-ci: golangci-lint tidy-lint
+
+.PHONY: golangci-lint
+golangci-lint:
+	@$(foreach mod,$(MODULE_DIRS), \
+		(cd $(mod) && \
+		echo "[lint] golangci-lint: $(mod)" && \
+		golangci-lint run --path-prefix $(mod) ./...) &&) true
 
 lint:
 	@staticcheck .
 	@goimports -w .
 	@go vet
-	@go build -o bin/garm
+	@go build -o bin/$(SERVICE)
 
 .PHONY: tidy
 tidy:
 	@$(foreach dir,$(MODULE_DIRS), \
 		(cd $(dir) && go mod tidy) &&) true
+
+.PHONY: tidy-lint
+tidy-lint:
+	@$(foreach mod,$(MODULE_DIRS), \
+		(cd $(mod) && \
+		echo "[lint] tidy: $(mod)" && \
+		go mod tidy && \
+		git diff --exit-code -- go.mod go.sum) &&) true
 
 .PHONY: govulncheck
 vulncheck:
