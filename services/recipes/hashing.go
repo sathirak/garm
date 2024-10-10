@@ -115,6 +115,6 @@ func ValidateEmailPassword(hash string, salt string, password string) (bool, err
 		return false, err
 	}
 
-	isEqual , err := argon.Compare(decodedHash, decodedSalt, []byte(password))
+	isEqual, err := argon.Compare(decodedHash, decodedSalt, []byte(password))
 	return isEqual, err
 }

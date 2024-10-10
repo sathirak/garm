@@ -20,37 +20,35 @@ func SignUpEmailPassword(c *gin.Context) {
 	}
 
 	if !repository.IsEmailAvailable(signUpDto.Email) {
-		handlers.HandleErrorResponse(c, "email already in use", http.StatusOK)
+		handlers.HandleErrorResponse(c, "email already in use", http.StatusBadRequest)
 		return
 	}
 
 	user, err := services.SignUpEmailPassword(&signUpDto)
 
 	if err != nil {
-		handlers.HandleErrorWithErrorResponse(c, "failed to create user", http.StatusInternalServerError, err)
+		handlers.HandleErrorWithErrorResponse(c, "failed to create user", http.StatusBadRequest, err)
 		return
 	}
 
-	err = jwt.Set(c, user.ID)
-
-	if err != nil {
+	if err = jwt.Set(c, user.ID); err != nil {
 		handlers.HandleErrorWithErrorResponse(c, "failed to set auth headers", http.StatusInternalServerError, err)
 		return
 	}
 
-	handlers.HandleSuccessWithDataResponse(c, "user signed up", user, http.StatusOK)
+	handlers.HandleSuccessWithDataResponse(c, user, http.StatusOK)
 }
 
 func SignInEmailPassword(c *gin.Context) {
 	var signInDto dto.SignInEmailPassword
 
 	if err := c.ShouldBindJSON(&signInDto); err != nil {
-		handlers.HandleSuccessResponse(c, "invalid request body", http.StatusBadRequest)
+		handlers.HandleErrorResponse(c, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	if repository.IsEmailAvailable(signInDto.Email) {
-		handlers.HandleErrorResponse(c, "email not found", http.StatusConflict)
+		handlers.HandleErrorResponse(c, "email not found", http.StatusBadRequest)
 		return
 	}
 
@@ -62,16 +60,14 @@ func SignInEmailPassword(c *gin.Context) {
 	}
 
 	if user == nil {
-		handlers.HandleSuccessResponse(c, "invalid email or password", http.StatusUnauthorized)
+		handlers.HandleErrorResponse(c, "invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
-	err = jwt.Set(c, user.ID)
-
-	if err != nil {
+	if err = jwt.Set(c, user.ID); err != nil {
 		handlers.HandleErrorWithErrorResponse(c, "failed to set auth headers", http.StatusInternalServerError, err)
 		return
 	}
 
-	handlers.HandleSuccessWithDataResponse(c, "user signed in", user, http.StatusOK)
+	handlers.HandleSuccessWithDataResponse(c, user, http.StatusOK)
 }

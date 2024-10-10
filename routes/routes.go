@@ -10,8 +10,12 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		auth := v1.Group("/auth")
 
-		auth.GET("/", controllers.Authenticate)
 		auth.GET("/healthz", controllers.Healthz)
+
+		// Authenticate all users
+		auth.GET("/", controllers.Authenticate)
+
+		// Email Password recipe
 		auth.POST("/email-password/sign-up", controllers.SignUpEmailPassword)
 		auth.POST("/email-password/sign-in", controllers.SignInEmailPassword)
 	}

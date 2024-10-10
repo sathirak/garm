@@ -15,19 +15,17 @@ func HandleHealth(c *gin.Context) {
 	})
 }
 
-func HandleSuccessWithDataResponse(c *gin.Context, message string, data interface{}, statusCode int) {
+func HandleSuccessWithDataResponse(c *gin.Context, data interface{}, statusCode int) {
 	response := models.Response{
-		Status:  "success",
-		Message: message,
-		Data:    data,
+		Status: "success",
+		Data:   data,
 	}
 	c.JSON(statusCode, response)
 }
 
-func HandleSuccessResponse(c *gin.Context, message string, statusCode int) {
+func HandleSuccessResponse(c *gin.Context, statusCode int) {
 	response := models.Response{
-		Status:  "success",
-		Message: message,
+		Status: "success",
 	}
 	c.JSON(statusCode, response)
 }
@@ -51,19 +49,23 @@ func HandleErrorWithErrorResponse(c *gin.Context, message string, statusCode int
 
 type UnauthorizedError struct{}
 
-func (e *UnauthorizedError) Error() string {
-	return "Unauthorized"
+// func (e *UnauthorizedError) Unauthorized() string {
+// 	return "unauthorized"
+// }
+
+func (e *UnauthorizedError) Unauthenticated() string {
+	return "unauthorized"
 }
 
-func NewUnauthorizedError() *UnauthorizedError {
+func NewAuthorizationError() *UnauthorizedError {
 	return &UnauthorizedError{}
 }
 
-func HandleUnauthorisedResponse(c *gin.Context) {
+func HandleUnauthenticatedResponse(c *gin.Context) {
 	response := models.Response{
 		Status:  "error",
-		Message: "Unauthorised",
-		Error:   NewUnauthorizedError().Error(),
+		Message: "unauthorised",
+		Error:   NewAuthorizationError().Unauthenticated(),
 	}
 
 	c.JSON(http.StatusUnauthorized, response)
