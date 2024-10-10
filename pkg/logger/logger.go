@@ -23,5 +23,9 @@ func Initialize() {
 	logger = base.Sugar()
 	logger.Infow("startup", "package", "logger", "status", "ok")
 
-	defer base.Sync()
+	defer func() {
+		if err := base.Sync(); err != nil {
+			logger.Errorw("shutdown", "package", "logger", "error", err.Error())
+		}
+	}()
 }
