@@ -8,16 +8,14 @@ import (
 	"github.com/sathirak/garm/pkg/logger"
 )
 
-
-
-func HandleHealth(c *gin.Context, details []models.ServiceStatus) {
+func Healthz(c *gin.Context, details []models.ServiceStatus) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "ok",
 		"details": details,
 	})
 }
 
-func HandleSuccessWithDataResponse(c *gin.Context, data interface{}, statusCode int) {
+func SuccessWithDataResponse(c *gin.Context, data interface{}, statusCode int) {
 	response := models.Response{
 		Status: "success",
 		Data:   data,
@@ -25,14 +23,14 @@ func HandleSuccessWithDataResponse(c *gin.Context, data interface{}, statusCode 
 	c.JSON(statusCode, response)
 }
 
-func HandleSuccessResponse(c *gin.Context, statusCode int) {
+func SuccessResponse(c *gin.Context, statusCode int) {
 	response := models.Response{
 		Status: "success",
 	}
 	c.JSON(statusCode, response)
 }
 
-func HandleErrorResponse(c *gin.Context, message string, statusCode int) {
+func ErrorResponse(c *gin.Context, message string, statusCode int) {
 	response := models.Response{
 		Status:  "error",
 		Message: message,
@@ -40,7 +38,7 @@ func HandleErrorResponse(c *gin.Context, message string, statusCode int) {
 	c.JSON(statusCode, response)
 }
 
-func HandleErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
+func ErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
 	logger.Get().Errorw("onprocess", "package", "handler", "error", err.Error())
 	response := models.Response{
 		Status:  "error",
@@ -63,7 +61,7 @@ func NewAuthorizationError() *UnauthorizedError {
 	return &UnauthorizedError{}
 }
 
-func HandleUnauthenticatedResponse(c *gin.Context) {
+func UnauthenticatedResponse(c *gin.Context) {
 	response := models.Response{
 		Status:  "error",
 		Message: "unauthorised",

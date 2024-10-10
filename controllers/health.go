@@ -27,5 +27,5 @@ func Healthz(c *gin.Context) {
 	dbStatus := NewServiceStatus("database", err)
 
 	details := []models.ServiceStatus{dbStatus}
-	handlers.HandleHealth(c, details)
+	handlers.Healthz(c, details)
 }
