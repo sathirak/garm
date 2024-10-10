@@ -54,8 +54,8 @@ func Initialize() {
 
 func ensureRequiredEnvsAreAvailable() error {
 	log := logger.Get()
-	err := godotenv.Load()
-	if err != nil {
+
+	if err := godotenv.Load(); err != nil {
 		return err
 	}
 
@@ -65,9 +65,8 @@ func ensureRequiredEnvsAreAvailable() error {
 		if getEnv(env) == "" {
 			log.Errorw("startup", "package", "config:env", env, getEnv(env), "status", "bad", "error", "error loading required env")
 			return nil
-		} else {
-			log.Infow("startup", "package", "config:env", env, getEnv(env), "status", "ok")
 		}
+		log.Infow("startup", "package", "config:env", env, getEnv(env), "status", "ok")
 	}
 	return nil
 }

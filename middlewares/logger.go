@@ -24,14 +24,12 @@ func Logger() gin.HandlerFunc {
 		latency := end.Sub(start)
 
 		statusCode := c.Writer.Status()
-		err := c.Errors.Last()
 
-		if err != nil {
+		if err := c.Errors.Last(); err != nil {
 			errorString := c.Errors.Last().Error()
 			log.Errorw(errorString, "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "latency", latency, "status", statusCode)
-		} else {
-			log.Infow("<<", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "latency", latency, "status", statusCode)
-
 		}
+
+		log.Infow("<<", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "latency", latency, "status", statusCode)
 	}
 }
