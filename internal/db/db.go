@@ -21,7 +21,7 @@ func Close() {
 	err := db.Close()
 
 	if err != nil {
-		log.Errorw("shutdown", "package", "db", "status", "bad", "error", err.Error())
+		log.Errorw("shutdown", "package", "db", "error", err.Error())
 		return
 	}
 	log.Infow("shutdown", "package", "db", "status", "ok")
@@ -42,13 +42,13 @@ func Initialize() {
 	db, err = sql.Open("postgres", psqlInfo)
 
 	if err != nil {
-		log.Errorw("startup", "package", "db", "status", "bad", "error", err.Error())
+		log.Errorw("startup", "package", "db", "error", err.Error())
 	}
 
 	err = db.Ping()
 
 	if err != nil {
-		log.Errorw("startup", "package", "db", "status", "bad", "error", err.Error())
+		log.Errorw("startup", "package", "db", "error", err.Error())
 	}
 
 	log.Infow("startup", "package", "db", "status", "ok")

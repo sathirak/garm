@@ -1,11 +1,11 @@
 package jwt
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sathirak/garm/internal/config"
+	"github.com/sathirak/garm/internal/errors"
 )
 
 type JWT struct {
@@ -34,7 +34,7 @@ func Parse(bearerToken string) (jwtData *JWT, err error) {
 
 	prefix := "Bearer "
 	if !(len(bearerToken) > len(prefix) && bearerToken[:len(prefix)] == prefix) {
-		return nil, fmt.Errorf("invalid token")
+		return nil, errors.ErrInvalidBearerHeader
 	}
 
 	token, err := jwt.Parse(bearerToken[len(prefix):], func(token *jwt.Token) (interface{}, error) {
@@ -46,11 +46,12 @@ func Parse(bearerToken string) (jwtData *JWT, err error) {
 	}
 
 	if !token.Valid {
-		return nil, fmt.Errorf("invalid token")
+		return nil, errors.ErrInvalidToken
 	}
+
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
+		return nil, errors.ErrInvalidTokenClaims
 	}
 
 	id := claims["id"].(string)

@@ -43,5 +43,5 @@ func Authenticate(c *gin.Context) {
 		}
 	}
 
-	handlers.HandleSuccessWithDataResponse(c, "user validated", user, http.StatusOK)
+	handlers.HandleSuccessWithDataResponse(c, user, http.StatusOK)
 }

@@ -29,7 +29,7 @@ func Initialize() {
 	log := logger.Get()
 
 	if err := ensureRequiredEnvsAreAvailable(); err != nil {
-		log.Errorw("startup", "package", "config", "status", "bad", "error", err.Error())
+		log.Errorw("startup", "package", "config", "error", err.Error())
 		return
 	}
 
@@ -63,7 +63,7 @@ func ensureRequiredEnvsAreAvailable() error {
 
 	for _, env := range requiredEnvs {
 		if getEnv(env) == "" {
-			log.Errorw("startup", "package", "config:env", env, getEnv(env), "status", "bad", "error", "error loading required env")
+			log.Errorw("startup", "package", "config:env", env, getEnv(env), "error", "error loading required env")
 			return nil
 		}
 		log.Infow("startup", "package", "config:env", env, getEnv(env), "status", "ok")

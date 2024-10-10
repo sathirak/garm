@@ -8,29 +8,27 @@ import (
 	"github.com/sathirak/garm/pkg/logger"
 )
 
-func HandleHealth(c *gin.Context) {
+
+
+func HandleHealth(c *gin.Context, details []models.ServiceStatus) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "ok",
-		"service": "garm",
+		"details": details,
 	})
 }
 
-func HandleSuccessWithDataResponse(c *gin.Context, message string, data interface{}, statusCode int) {
+func HandleSuccessWithDataResponse(c *gin.Context, data interface{}, statusCode int) {
 	response := models.Response{
-		Status:  "sucess",
-		Message: message,
-		Data:    data,
+		Status: "success",
+		Data:   data,
 	}
-
 	c.JSON(statusCode, response)
 }
 
-func HandleSuccessResponse(c *gin.Context, message string, statusCode int) {
+func HandleSuccessResponse(c *gin.Context, statusCode int) {
 	response := models.Response{
-		Status:  "success",
-		Message: message,
+		Status: "success",
 	}
-
 	c.JSON(statusCode, response)
 }
 
@@ -39,35 +37,37 @@ func HandleErrorResponse(c *gin.Context, message string, statusCode int) {
 		Status:  "error",
 		Message: message,
 	}
-
 	c.JSON(statusCode, response)
 }
 
 func HandleErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
-	logger.Get().Error(err.Error())
+	logger.Get().Errorw("onprocess", "package", "handler", "error", err.Error())
 	response := models.Response{
 		Status:  "error",
 		Message: message,
 	}
-
 	c.JSON(statusCode, response)
 }
 
 type UnauthorizedError struct{}
 
-func (e *UnauthorizedError) Error() string {
-	return "Unauthorized"
+// func (e *UnauthorizedError) Unauthorized() string {
+// 	return "unauthorized"
+// }
+
+func (e *UnauthorizedError) Unauthenticated() string {
+	return "unauthorized"
 }
 
-func NewUnauthorizedError() *UnauthorizedError {
+func NewAuthorizationError() *UnauthorizedError {
 	return &UnauthorizedError{}
 }
 
-func HandleUnauthorisedResponse(c *gin.Context) {
+func HandleUnauthenticatedResponse(c *gin.Context) {
 	response := models.Response{
 		Status:  "error",
-		Message: "Unauthorised",
-		Error:   NewUnauthorizedError().Error(),
+		Message: "unauthorised",
+		Error:   NewAuthorizationError().Unauthenticated(),
 	}
 
 	c.JSON(http.StatusUnauthorized, response)
