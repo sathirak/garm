@@ -16,7 +16,7 @@ func Initialize() {
 	base, err := zap.NewProduction()
 
 	if err != nil {
-		fmt.Printf("error initializing logger:\n %v", err)
+		fmt.Print("startup", "package", "logger", "error", err.Error())
 		return
 	}
 

@@ -17,11 +17,10 @@ func HandleHealth(c *gin.Context) {
 
 func HandleSuccessWithDataResponse(c *gin.Context, message string, data interface{}, statusCode int) {
 	response := models.Response{
-		Status:  "sucess",
+		Status:  "success",
 		Message: message,
 		Data:    data,
 	}
-
 	c.JSON(statusCode, response)
 }
 
@@ -30,7 +29,6 @@ func HandleSuccessResponse(c *gin.Context, message string, statusCode int) {
 		Status:  "success",
 		Message: message,
 	}
-
 	c.JSON(statusCode, response)
 }
 
@@ -39,17 +37,15 @@ func HandleErrorResponse(c *gin.Context, message string, statusCode int) {
 		Status:  "error",
 		Message: message,
 	}
-
 	c.JSON(statusCode, response)
 }
 
 func HandleErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
-	logger.Get().Error(err.Error())
+	logger.Get().Errorw("onprocess", "package", "handler", "error", err.Error())
 	response := models.Response{
 		Status:  "error",
 		Message: message,
 	}
-
 	c.JSON(statusCode, response)
 }
 

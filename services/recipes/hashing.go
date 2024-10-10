@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 
-	"github.com/sathirak/garm/pkg/logger"
+	"github.com/sathirak/garm/internal/errors"
 	"github.com/sathirak/garm/repository"
 	"golang.org/x/crypto/argon2"
 )
@@ -48,8 +47,7 @@ func NewArgon2idHash(time, saltLen uint32, memory uint32, threads uint8, keyLen 
 func randomSecret(length uint32) ([]byte, error) {
 	secret := make([]byte, length)
 
-	_, err := rand.Read(secret)
-	if err != nil {
+	if _, err := rand.Read(secret); err != nil {
 		return nil, err
 	}
 
@@ -77,20 +75,19 @@ func (a *Argon2idHash) GenerateHash(password, salt []byte) (*HashSalt, error) {
 }
 
 // Compare generated hash with store hash.
-func (a *Argon2idHash) Compare(hash, salt, password []byte) error {
+func (a *Argon2idHash) Compare(hash, salt, password []byte) (bool, error) {
 	// Generate hash for comparison.
 
 	hashSalt, err := a.GenerateHash(password, salt)
 	if err != nil {
-		logger.Get().Errorw(err.Error())
-		return err
+		return false, err
 	}
 	// Compare the generated hash with the stored hash.
 	// If they don't match return error.
 	if !bytes.Equal(hash, hashSalt.Hash) {
-		return errors.New("hash doesn't match")
+		return false, errors.ErrHashDoesntMatch
 	}
-	return nil
+	return true, nil
 }
 
 func CreateEmailPassword(userID string, password string) error {
@@ -105,19 +102,19 @@ func CreateEmailPassword(userID string, password string) error {
 	return repository.CreateEmailPassword(userID, salt, hash)
 }
 
-func ValidateEmailPassword(hash string, salt string, password string) bool {
+func ValidateEmailPassword(hash string, salt string, password string) (bool, error) {
 	argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
 
 	decodedHash, err := base64.StdEncoding.DecodeString(hash)
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	decodedSalt, err := base64.StdEncoding.DecodeString(salt)
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	err = argon.Compare(decodedHash, decodedSalt, []byte(password))
-	return err == nil
+	isEqual , err := argon.Compare(decodedHash, decodedSalt, []byte(password))
+	return isEqual, err
 }
