@@ -33,5 +33,5 @@ func Initialize() {
 
 	key = block.Bytes
 
-	log.Errorw("startup", "package", "jwt", "status", "ok")
+	log.Infow("startup", "package", "jwt", "status", "ok")
 }

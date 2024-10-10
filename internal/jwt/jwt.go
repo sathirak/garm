@@ -1,63 +1,35 @@
 package jwt
 
 import (
-	"fmt"
-	"time"
-
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/sathirak/garm/internal/config"
+	"github.com/gin-gonic/gin"
 )
 
-type JWT struct {
-	ID        string
-	ExpiredAt time.Time
-}
-
-func Generate(id string) (string, error) {
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":  id,
-		"exp": time.Now().Add(config.Get().App.JWTExpTime).Unix(),
-	})
-
-	tokenString, err := token.SignedString(GetKey())
+func Set(c *gin.Context, userId string) error {
+	bearerToken, err := Generate(userId)
 	if err != nil {
-		return "", err
+		return err
 	}
-
-	bearerToken := "Bearer " + tokenString
-
-	return bearerToken, nil
+	c.Header("Authorization", bearerToken)
+	return nil
 }
 
-func Parse(bearerToken string) (jwtData *JWT, err error) {
+func Get(c *gin.Context) (*JWT, error) {
+	bearerToken := c.GetHeader("Authorization")
 
-	prefix := "Bearer "
-	if !(len(bearerToken) > len(prefix) && bearerToken[:len(prefix)] == prefix) {
-		return nil, fmt.Errorf("invalid token")
-	}
-
-	token, err := jwt.Parse(bearerToken[len(prefix):], func(token *jwt.Token) (interface{}, error) {
-		return GetKey(), nil
-	})
+	jwtData, err := Parse(bearerToken)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if !token.Valid {
-		return nil, fmt.Errorf("invalid token")
-	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return nil, fmt.Errorf("invalid token claims")
+	userJwt := JWT{
+		ID:        jwtData.ID,
+		ExpiredAt: jwtData.ExpiredAt,
 	}
 
-	id := claims["id"].(string)
-	exp := claims["exp"].(float64)
-	expiredAt := time.Unix(int64(exp), 0)
+	return &userJwt, nil
+}
 
-	jwtData = &JWT{ID: id, ExpiredAt: expiredAt}
-
-	return jwtData, nil
+func Delete(c *gin.Context) {
+	c.Request.Header.Del("Authorization")
 }
