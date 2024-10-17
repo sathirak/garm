@@ -39,7 +39,7 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 	})
 
 	if err != nil {
-		return nil, errx.NewError(nil, err)
+		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
 	hash, salt, err := recipes.CreateEmailPassword(user.ID, signUpDto.Password)
@@ -70,8 +70,8 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, 
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if isValid, err := recipes.ValidateEmailPassword(credentails.Hash, credentails.Salt, signInDto.Password); err != nil || !isValid {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	if err := recipes.ValidateEmailPassword(credentails.Hash, credentails.Salt, signInDto.Password); !err.IsNil() {
+		return nil, err
 	}
 
 	userMeta, err := repository.GetUserMeta(credentails.UserID)

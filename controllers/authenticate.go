@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/handlers"
@@ -13,7 +12,7 @@ func Authenticate(c *gin.Context) {
 	err := services.Authenticate(c)
 
 	if !err.IsNil() {
-		handlers.Errorx(c, err, http.StatusUnauthorized)
+		handlers.Errorx(c, err)
 		return
 	}
 

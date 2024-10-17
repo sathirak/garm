@@ -20,37 +20,23 @@ func SuccessResponse(c *gin.Context) {
 	})
 }
 
-func ErrorResponse(c *gin.Context, message string, statusCode int) {
-	c.JSON(statusCode, models.Response{
+func Errorx(c *gin.Context, err errx.Errx) {
+
+	if svcErr := err.GetSvcError(); svcErr != nil {
+		logger.Get().Error(svcErr)
+	}
+
+	apiErr := err.GetApiError()
+	var genericErr string
+
+	if apiErr != nil {
+		genericErr = apiErr.Error()
+	} else {
+		genericErr = errx.ErrInternalServerErr.Err.Error()
+	}
+
+	c.JSON(err.ApiError.StatusCode, models.Response{
 		Status:  "error",
-		Message: message,
+		Message: genericErr,
 	})
-}
-
-func ErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
-	c.JSON(statusCode, models.Response{
-		Status:  "error",
-		Message: message,
-	})
-}
-
-func Errorx(c *gin.Context, err errx.Errx, statusCode int) {
-
-  if svcErr := err.GetSvcError(); svcErr != nil {
-    logger.Get().Error(svcErr)
-  }
-
-  apiErr := err.GetApiError()
-  var genericErr string
-
-  if apiErr != nil {
-    genericErr = apiErr.Error()
-  } else {
-    genericErr = errx.ErrInternalServerErr.Error()
-  }
-
-  c.JSON(statusCode, models.Response{
-    Status:  "error",
-    Message: genericErr,
-  })
 }

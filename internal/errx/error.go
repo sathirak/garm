@@ -3,34 +3,34 @@ package errx
 import "errors"
 
 type Errx struct {
-	ApiError error
+	ApiError ApiErrx
 	SvcError error
 }
 
-func NewError(svcError, appError error) Errx {
+func NewError(svcError error, apiError ApiErrx) Errx {
 	return Errx{
-		ApiError: appError,
+		ApiError: apiError,
 		SvcError: svcError,
 	}
 }
 
 func Nil() Errx {
 	return Errx{
-		ApiError: nil,
+		ApiError: ApiErrx{nil, 200},
 		SvcError: nil,
 	}
 }
 
 func (e Errx) Error() string {
-	return errors.Join(e.ApiError, e.SvcError).Error()
+	return errors.Join(e.ApiError.Err, e.SvcError).Error()
 }
 
 func (e Errx) IsNil() bool {
-	return e.ApiError == nil && e.SvcError == nil
+	return e.ApiError.Err == nil && e.SvcError == nil
 }
 
 func (e Errx) GetApiError() error {
-	return e.ApiError
+	return e.ApiError.Err
 }
 
 func (e Errx) GetSvcError() error {

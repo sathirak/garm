@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 
 	"github.com/sathirak/garm/internal/errx"
 	"golang.org/x/crypto/argon2"
@@ -74,19 +75,19 @@ func (a *Argon2idHash) GenerateHash(password, salt []byte) (*HashSalt, error) {
 }
 
 // Compare generated hash with store hash.
-func (a *Argon2idHash) Compare(hash, salt, password []byte) (bool, error) {
+func (a *Argon2idHash) Compare(hash, salt, password []byte) error {
 	// Generate hash for comparison.
 
 	hashSalt, err := a.GenerateHash(password, salt)
 	if err != nil {
-		return false, err
+		return err
 	}
 	// Compare the generated hash with the stored hash.
 	// If they don't match return error.
 	if !bytes.Equal(hash, hashSalt.Hash) {
-		return false, errx.ErrHashDoesntMatch
+		return errors.New("hash doesnt match")
 	}
-	return true, nil
+	return nil
 }
 
 func CreateEmailPassword(userID string, password string) (string, string, error) {
@@ -101,19 +102,19 @@ func CreateEmailPassword(userID string, password string) (string, string, error)
 	return hash, salt, nil
 }
 
-func ValidateEmailPassword(hash string, salt string, password string) (bool, error) {
+func ValidateEmailPassword(hash string, salt string, password string) errx.Errx {
 	argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
 
 	decodedHash, err := base64.StdEncoding.DecodeString(hash)
 	if err != nil {
-		return false, err
+		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
 	decodedSalt, err := base64.StdEncoding.DecodeString(salt)
 	if err != nil {
-		return false, err
+		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	isEqual, err := argon.Compare(decodedHash, decodedSalt, []byte(password))
-	return isEqual, err
+	err = argon.Compare(decodedHash, decodedSalt, []byte(password))
+	return errx.NewError(err, errx.ErrInvalidCredentials)
 }

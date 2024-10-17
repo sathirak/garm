@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/handlers"
 	"github.com/sathirak/garm/internal/errx"
@@ -27,19 +25,19 @@ func SignUpEmailPassword(c *gin.Context) {
 	var signUpDto dto.SignUpEmailPassword
 
 	if err := c.ShouldBindJSON(&signUpDto); err != nil {
-		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent), http.StatusUnprocessableEntity)
+		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
 		return
 	}
 
 	user, err := services.SignUpEmailPassword(&signUpDto)
 
 	if !err.IsNil() {
-		handlers.Errorx(c, err, http.StatusUnprocessableEntity)
+		handlers.Errorx(c, err)
 		return
 	}
 
 	if err := jwt.Set(c, user.ID); !err.IsNil() {
-    handlers.Errorx(c, err, http.StatusInternalServerError)
+		handlers.Errorx(c, err)
 		return
 	}
 
@@ -62,24 +60,19 @@ func SignInEmailPassword(c *gin.Context) {
 	var signInDto dto.SignInEmailPassword
 
 	if err := c.ShouldBindJSON(&signInDto); err != nil {
-		handlers.ErrorResponse(c, "invalid request body", http.StatusBadRequest)
+		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
 		return
 	}
 
 	user, err := services.SignInEmailPassword(&signInDto)
 
 	if !err.IsNil() {
-		handlers.ErrorWithErrorResponse(c, "failed to sign in user", http.StatusInternalServerError, err)
-		return
-	}
-
-	if user == nil {
-		handlers.ErrorResponse(c, "invalid email or password", http.StatusUnauthorized)
+		handlers.Errorx(c, err)
 		return
 	}
 
 	if err := jwt.Set(c, user.ID); !err.IsNil() {
-    handlers.Errorx(c, err, http.StatusInternalServerError)
+		handlers.Errorx(c, err)
 		return
 	}
 
