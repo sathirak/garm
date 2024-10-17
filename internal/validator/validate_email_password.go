@@ -9,7 +9,7 @@ import (
 
 var validate *validator.Validate
 
-func ValidateSignUp(signUpDto *dto.SignUpEmailPassword) bool {
+func ValidateSignUp(signUpDto *dto.SignUpEmailPassword) error {
 	log := logger.Get()
 	validate = validator.New(validator.WithRequiredStructEnabled())
 
@@ -21,7 +21,7 @@ func ValidateSignUp(signUpDto *dto.SignUpEmailPassword) bool {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return false
+			return err
 		}
 
 		for _, err := range err.(validator.ValidationErrors) {
@@ -39,9 +39,9 @@ func ValidateSignUp(signUpDto *dto.SignUpEmailPassword) bool {
 		}
 
 		// from here you can create your own error messages in whatever language you wish
-		return false
+		return err
 	}
-	return true
+	return nil
 }
 
 func ValidatePassword(password string) error {
@@ -50,7 +50,7 @@ func ValidatePassword(password string) error {
 	return passwordvalidator.Validate(password, minEntropyBits)
 }
 
-func ValidateSignIn(signInDto *dto.SignInEmailPassword) bool {
+func ValidateSignIn(signInDto *dto.SignInEmailPassword) error {
 	log := logger.Get()
 	validate = validator.New(validator.WithRequiredStructEnabled())
 
@@ -62,7 +62,7 @@ func ValidateSignIn(signInDto *dto.SignInEmailPassword) bool {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return false
+			return err
 		}
 
 		for _, err := range err.(validator.ValidationErrors) {
@@ -80,7 +80,7 @@ func ValidateSignIn(signInDto *dto.SignInEmailPassword) bool {
 		}
 
 		// from here you can create your own error messages in whatever language you wish
-		return false
+		return err
 	}
-	return true
+	return nil
 }

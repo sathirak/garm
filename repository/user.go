@@ -5,10 +5,9 @@ import (
 
 	"github.com/sathirak/garm/internal/db"
 	"github.com/sathirak/garm/models"
-	"github.com/sathirak/garm/pkg/logger"
 )
 
-func IsEmailAvailable(email string) bool {
+func IsEmailAvailable(email string) (bool, error) {
 	// If email is not in table returns true
 	conn := db.Get()
 
@@ -19,13 +18,13 @@ func IsEmailAvailable(email string) bool {
 		email).Scan(&existingEmail)
 
 	if err == sql.ErrNoRows {
-		return err == sql.ErrNoRows
+		return true, nil
 	} else if err != nil {
-		logger.Get().Errorw("error", "err", err)
+		return false, err
 	}
 
 	// If there's an error (other than no rows) or if an email is found, it's not available
-	return false
+	return false, nil
 }
 
 func IsIDAvailable(id string) bool {

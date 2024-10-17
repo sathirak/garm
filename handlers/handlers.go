@@ -36,21 +36,21 @@ func ErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err 
 
 func Errorx(c *gin.Context, err errx.Errx, statusCode int) {
 
-	if svcErr := err.GetSvcError(); svcErr != nil {
-		logger.Get().Error(svcErr)
-	}
+  if svcErr := err.GetSvcError(); svcErr != nil {
+    logger.Get().Error(svcErr)
+  }
 
-	apiErr := err.GetApiError()
-	var genericErr string
+  apiErr := err.GetApiError()
+  var genericErr string
 
-	if apiErr != nil {
-		genericErr = apiErr.Error()
-	} else {
-		genericErr = errx.ErrInternalServerErr.Error()
-	}
+  if apiErr != nil {
+    genericErr = apiErr.Error()
+  } else {
+    genericErr = errx.ErrInternalServerErr.Error()
+  }
 
-	c.JSON(statusCode, models.Response{
-		Status:  "error",
-		Message: genericErr,
-	})
+  c.JSON(statusCode, models.Response{
+    Status:  "error",
+    Message: genericErr,
+  })
 }

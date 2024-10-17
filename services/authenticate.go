@@ -13,7 +13,7 @@ func Authenticate(c *gin.Context) errx.Errx {
 
 	token, err := jwt.Get(c)
 
-	if err != nil {
+	if !err.IsNil() {
 		return errx.NewError(err, errx.ErrInvalidToken)
 	}
 
@@ -26,7 +26,7 @@ func Authenticate(c *gin.Context) errx.Errx {
 
 		err = jwt.Set(c, token.ID)
 
-		if err != nil {
+		if !err.IsNil() {
 			return errx.NewError(err, errx.ErrInvalidToken)
 		}
 	}

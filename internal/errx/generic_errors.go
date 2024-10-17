@@ -6,7 +6,7 @@ import (
 
 var ErrInternalServerErr = errors.New("internal server error")
 var ErrUnauthenticated = errors.New("unauthenticated request")
-
+var ErrUnprocessableContent = errors.New("unprocessable content")
 // package recipes
 var ErrHashDoesntMatch = errors.New("hash doesn't match")
 
@@ -19,6 +19,8 @@ var (
 
 // package services email password
 var (
+  ErrEmailUnavailable            = errors.New("email unavailable")
+  ErrPasswordInvalid            = errors.New("password invalid")
 	ErrInvalidUserData            = errors.New("invalid user data")
 	ErrMissingOrMalformedApiToken = errors.New("missing or malformed api token")
 )
