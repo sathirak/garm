@@ -6,10 +6,12 @@ import (
 
 // profile scope
 type User struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Locale    string `json:"locale"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	ContactNo   string `json:"contact_no"`
+	CountryCode string `json:"country_code"`
+	Email       string `json:"email"`
+	Locale      string `json:"locale"`
 }
 
 // full user scope

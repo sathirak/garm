@@ -11,6 +11,18 @@ import (
 	"github.com/sathirak/garm/services"
 )
 
+// SignUpEmailPassword godoc
+//
+//	@Summary		Sign up with email and password
+//	@Description	Creates a new user account using email and password
+//	@Tags			email-password
+//	@Accept			json
+//	@Produce		json
+//	@Param			signUpDto	body		dto.SignUpEmailPassword	true	"Sign Up Data"
+//	@Success		200			{object}	models.UserMeta
+//	@Router			/email-password/sign-up [post]
+//
+//	@Security		ApiKeyAuth
 func SignUpEmailPassword(c *gin.Context) {
 	var signUpDto dto.SignUpEmailPassword
 
@@ -39,16 +51,23 @@ func SignUpEmailPassword(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user, http.StatusOK)
 }
 
+// SignInEmailPassword godoc
+//
+//	@Summary		Sign In with email and password
+//	@Description	Returns a JWT token for the user
+//	@Tags			email-password
+//	@Accept			json
+//	@Produce		json
+//	@Param			signUpDto	body		dto.SignInEmailPassword	true	"Sign In Data"
+//	@Success		200			{object}	models.UserMeta
+//	@Router			/email-password/sign-in [post]
+//
+//	@Security		ApiKeyAuth
 func SignInEmailPassword(c *gin.Context) {
 	var signInDto dto.SignInEmailPassword
 
 	if err := c.ShouldBindJSON(&signInDto); err != nil {
 		handlers.ErrorResponse(c, "invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	if repository.IsEmailAvailable(signInDto.Email) {
-		handlers.ErrorResponse(c, "email not found", http.StatusBadRequest)
 		return
 	}
 

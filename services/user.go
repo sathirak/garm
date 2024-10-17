@@ -17,10 +17,13 @@ func CreateUser(dto *dto.UserInit) (*models.UserMeta, error) {
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
 		User: models.User{
-			Locale:    dto.Locale,
-			FirstName: dto.FirstName,
-			LastName:  dto.LastName,
-			Email:     dto.Email},
+			Locale:      dto.Locale,
+			FirstName:   dto.FirstName,
+			LastName:    dto.LastName,
+			Email:       dto.Email,
+			ContactNo:   dto.ContactNo,
+			CountryCode: dto.CountryCode,
+		},
 	}
 
 	err := repository.CreateUser(&user)

@@ -11,3 +11,8 @@ var (
 	ErrInvalidToken        = errors.New("invalid jwt token")
 	ErrInvalidTokenClaims  = errors.New("invalid jwt token claims")
 )
+
+// package services email password
+var (
+	ErrInvalidUserData = errors.New("invalid user data")
+)

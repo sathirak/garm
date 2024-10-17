@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 
 	"github.com/sathirak/garm/internal/errors"
-	"github.com/sathirak/garm/repository"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -90,16 +89,16 @@ func (a *Argon2idHash) Compare(hash, salt, password []byte) (bool, error) {
 	return true, nil
 }
 
-func CreateEmailPassword(userID string, password string) error {
+func CreateEmailPassword(userID string, password string) (string, string, error) {
 
 	argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
 	hashSalt, err := argon.GenerateHash([]byte(password), nil)
 	if err != nil {
-		return err
+		return "", "", err
 	}
 	hash := base64.StdEncoding.EncodeToString(hashSalt.Hash)
 	salt := base64.StdEncoding.EncodeToString(hashSalt.Salt)
-	return repository.CreateEmailPassword(userID, salt, hash)
+	return hash, salt, nil
 }
 
 func ValidateEmailPassword(hash string, salt string, password string) (bool, error) {

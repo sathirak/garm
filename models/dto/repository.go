@@ -1,13 +1,16 @@
 package dto
 
-import "time"
+import (
+	"time"
 
-type AuthCredentials struct {
-	ID             int       `json:"id"`
-	AuthUserID     string    `json:"auth_user_id"`
-	AuthMethodID   int       `json:"auth_method_id"`
-	AuthIdentifier string    `json:"auth_identifier"`
-	AuthSecret     string    `json:"auth_secret"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	"github.com/google/uuid"
+)
+
+type EmailCredentials struct {
+	ID        uuid.UUID `json:"id"`
+	UserID    string    `json:"user_id"`
+	Salt      string    `json:"salt"`
+	Hash      string    `json:"hash"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

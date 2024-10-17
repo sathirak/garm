@@ -12,9 +12,23 @@ import (
 	"github.com/sathirak/garm/middlewares"
 	"github.com/sathirak/garm/routes"
 
+	_ "github.com/sathirak/garm/docs"
 	"github.com/sathirak/garm/internal/db"
 	"github.com/sathirak/garm/pkg/logger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+//	@title			Garm API Docs
+//	@version		1.0
+//	@description	OpenAPI Docs for Garm Auth Server
+
+//	@host		localhost:9000
+//	@BasePath	/api/v1/auth/
+
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							header
+//	@name						x-api-token
 
 func main() {
 	logger.Initialize()
@@ -30,6 +44,11 @@ func main() {
 	}
 
 	r := gin.New()
+
+	if cfg.App.Env == "development" {
+		r.GET("/api/v1/auth/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+
 	r.Use(requestid.New())
 	r.Use(middlewares.Logger())
 	r.Use(middlewares.ApiKeyAuth())

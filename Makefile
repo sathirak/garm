@@ -16,10 +16,11 @@ run: build
 
 dev:
 	@clear
+	@swag init
 	@staticcheck .
 	@goimports -w .
-	@go vet
-	@go build -o bin/$(SERVICE)
+	@go vet .
+	@go build -o bin/$(SERVICE) .
 	@./bin/$(SERVICE)
 
 .PHONY: lint-ci

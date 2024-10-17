@@ -5,6 +5,7 @@ import (
 
 	"github.com/sathirak/garm/internal/db"
 	"github.com/sathirak/garm/models"
+	"github.com/sathirak/garm/pkg/logger"
 )
 
 func IsEmailAvailable(email string) bool {
@@ -14,11 +15,13 @@ func IsEmailAvailable(email string) bool {
 	var existingEmail string
 
 	err := conn.QueryRow(
-		`SELECT email FROM auth_users WHERE email = $1;`,
+		`SELECT "email" FROM "user" WHERE "email" = $1;`,
 		email).Scan(&existingEmail)
 
 	if err == sql.ErrNoRows {
 		return err == sql.ErrNoRows
+	} else if err != nil {
+		logger.Get().Errorw("error", "err", err)
 	}
 
 	// If there's an error (other than no rows) or if an email is found, it's not available
@@ -31,7 +34,7 @@ func IsIDAvailable(id string) bool {
 	var existingID string
 
 	err := conn.QueryRow(
-		`SELECT id FROM auth_users WHERE id = $1;`,
+		`SELECT id FROM "user" WHERE id = $1;`,
 		id).Scan(&existingID)
 
 	if err == sql.ErrNoRows {
@@ -46,12 +49,12 @@ func CreateUser(user *models.UserMeta) error {
 	conn := db.Get()
 
 	row := conn.QueryRow(
-		`INSERT INTO auth_users (id, first_name, last_name, email, verified_email, locale, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         RETURNING id, first_name, last_name, email, verified_email, locale, created_at, updated_at;`,
-		user.ID, user.FirstName, user.LastName, user.Email, user.VerifiedEmail, user.Locale, user.CreatedAt, user.UpdatedAt)
+		`INSERT INTO "user" (id, first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     RETURNING id, first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at;`,
+		user.ID, user.FirstName, user.LastName, user.Email, user.VerifiedEmail, user.Locale, user.ContactNo, user.CountryCode, user.CreatedAt, user.UpdatedAt)
 
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.VerifiedEmail, &user.Locale, &user.CreatedAt, &user.UpdatedAt)
+	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.VerifiedEmail, &user.Locale, &user.ContactNo, &user.CountryCode, &user.CreatedAt, &user.UpdatedAt)
 
 	if err != nil {
 		return err
@@ -66,7 +69,7 @@ func GetUserMeta(id string) (*models.UserMeta, error) {
 	var user models.UserMeta
 
 	err := conn.QueryRow(`
-		SELECT first_name, last_name, email, locale, id, verified_email, created_at, updated_at FROM auth_users WHERE id = $1;`, id).Scan(
+		SELECT first_name, last_name, email, locale, id, is_email_verified, created_at, updated_at FROM "user" WHERE id = $1;`, id).Scan(
 		&user.FirstName,
 		&user.LastName,
 		&user.Email,
