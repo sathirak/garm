@@ -13,7 +13,7 @@ func ApiKeyAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apiKey := c.Request.Header.Get("X-Api-Token")
 		if apiKey == "" || apiKey != cfg.App.ApiToken {
-			handlers.UnauthenticatedResponse(c)
+			handlers.ErrorWithErrorResponse(c, "invalid api key", 401, nil)
 			c.Abort()
 			return
 		}

@@ -48,7 +48,7 @@ func SignUpEmailPassword(c *gin.Context) {
 		return
 	}
 
-	handlers.SuccessWithDataResponse(c, user, http.StatusOK)
+	handlers.SuccessWithDataResponse(c, user)
 }
 
 // SignInEmailPassword godoc
@@ -88,5 +88,5 @@ func SignInEmailPassword(c *gin.Context) {
 		return
 	}
 
-	handlers.SuccessWithDataResponse(c, user, http.StatusOK)
+	handlers.SuccessWithDataResponse(c, user)
 }

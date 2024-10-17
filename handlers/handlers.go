@@ -1,33 +1,23 @@
 package handlers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/models"
-	"github.com/sathirak/garm/pkg/logger"
 )
 
-func Healthz(c *gin.Context, details []models.ServiceStatus) {
-	c.JSON(http.StatusOK, gin.H{
-		"status":  "ok",
-		"details": details,
-	})
-}
-
-func SuccessWithDataResponse(c *gin.Context, data interface{}, statusCode int) {
+func SuccessWithDataResponse(c *gin.Context, data interface{}) {
 	response := models.Response{
-		Status: "success",
+		Status: "ok",
 		Data:   data,
 	}
-	c.JSON(statusCode, response)
+	c.JSON(200, response)
 }
 
-func SuccessResponse(c *gin.Context, statusCode int) {
+func SuccessResponse(c *gin.Context) {
 	response := models.Response{
-		Status: "success",
+		Status: "ok",
 	}
-	c.JSON(statusCode, response)
+	c.JSON(200, response)
 }
 
 func ErrorResponse(c *gin.Context, message string, statusCode int) {
@@ -39,34 +29,9 @@ func ErrorResponse(c *gin.Context, message string, statusCode int) {
 }
 
 func ErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
-	logger.Get().Errorw("onprocess", "package", "handler", "error", err.Error())
 	response := models.Response{
 		Status:  "error",
 		Message: message,
 	}
 	c.JSON(statusCode, response)
-}
-
-type UnauthorizedError struct{}
-
-// func (e *UnauthorizedError) Unauthorized() string {
-// 	return "unauthorized"
-// }
-
-func (e *UnauthorizedError) Unauthenticated() string {
-	return "unauthorized"
-}
-
-func NewAuthorizationError() *UnauthorizedError {
-	return &UnauthorizedError{}
-}
-
-func UnauthenticatedResponse(c *gin.Context) {
-	response := models.Response{
-		Status:  "error",
-		Message: "unauthorised",
-		Error:   NewAuthorizationError().Unauthenticated(),
-	}
-
-	c.JSON(http.StatusUnauthorized, response)
 }

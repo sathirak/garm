@@ -43,5 +43,5 @@ func Authenticate(c *gin.Context) {
 		}
 	}
 
-	handlers.SuccessWithDataResponse(c, user, http.StatusOK)
+	handlers.SuccessWithDataResponse(c, user)
 }
