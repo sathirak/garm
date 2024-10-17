@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"github.com/sathirak/garm/internal/errors"
+	"github.com/sathirak/garm/internal/errx"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -84,7 +84,7 @@ func (a *Argon2idHash) Compare(hash, salt, password []byte) (bool, error) {
 	// Compare the generated hash with the stored hash.
 	// If they don't match return error.
 	if !bytes.Equal(hash, hashSalt.Hash) {
-		return false, errors.ErrHashDoesntMatch
+		return false, errx.ErrHashDoesntMatch
 	}
 	return true, nil
 }

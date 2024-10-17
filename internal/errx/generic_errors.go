@@ -1,6 +1,11 @@
-package errors
+package errx
 
-import "errors"
+import (
+	"errors"
+)
+
+var ErrInternalServerErr = errors.New("internal server error")
+var ErrUnauthenticated = errors.New("unauthenticated request")
 
 // package recipes
 var ErrHashDoesntMatch = errors.New("hash doesn't match")
@@ -14,5 +19,6 @@ var (
 
 // package services email password
 var (
-	ErrInvalidUserData = errors.New("invalid user data")
+	ErrInvalidUserData            = errors.New("invalid user data")
+	ErrMissingOrMalformedApiToken = errors.New("missing or malformed api token")
 )

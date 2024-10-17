@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/handlers"
 	"github.com/sathirak/garm/internal/config"
+	"github.com/sathirak/garm/internal/errx"
 )
 
 func ApiKeyAuth() gin.HandlerFunc {
@@ -13,7 +14,8 @@ func ApiKeyAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apiKey := c.Request.Header.Get("X-Api-Token")
 		if apiKey == "" || apiKey != cfg.App.ApiToken {
-			handlers.ErrorWithErrorResponse(c, "invalid api key", 401, nil)
+			err := errx.NewError(nil, errx.ErrMissingOrMalformedApiToken)
+			handlers.Errorx(c, err, 401)
 			c.Abort()
 			return
 		}

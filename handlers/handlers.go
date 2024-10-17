@@ -2,36 +2,55 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sathirak/garm/internal/errx"
 	"github.com/sathirak/garm/models"
+	"github.com/sathirak/garm/pkg/logger"
 )
 
 func SuccessWithDataResponse(c *gin.Context, data interface{}) {
-	response := models.Response{
+	c.JSON(200, models.Response{
 		Status: "ok",
 		Data:   data,
-	}
-	c.JSON(200, response)
+	})
 }
 
 func SuccessResponse(c *gin.Context) {
-	response := models.Response{
+	c.JSON(200, models.Response{
 		Status: "ok",
-	}
-	c.JSON(200, response)
+	})
 }
 
 func ErrorResponse(c *gin.Context, message string, statusCode int) {
-	response := models.Response{
+	c.JSON(statusCode, models.Response{
 		Status:  "error",
 		Message: message,
-	}
-	c.JSON(statusCode, response)
+	})
 }
 
 func ErrorWithErrorResponse(c *gin.Context, message string, statusCode int, err error) {
-	response := models.Response{
+	c.JSON(statusCode, models.Response{
 		Status:  "error",
 		Message: message,
+	})
+}
+
+func Errorx(c *gin.Context, err errx.Errx, statusCode int) {
+
+	if svcErr := err.GetSvcError(); svcErr != nil {
+		logger.Get().Error(svcErr)
 	}
-	c.JSON(statusCode, response)
+
+	apiErr := err.GetApiError()
+	var genericErr string
+
+	if apiErr != nil {
+		genericErr = apiErr.Error()
+	} else {
+		genericErr = errx.ErrInternalServerErr.Error()
+	}
+
+	c.JSON(statusCode, models.Response{
+		Status:  "error",
+		Message: genericErr,
+	})
 }

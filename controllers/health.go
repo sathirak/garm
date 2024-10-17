@@ -11,7 +11,7 @@ import (
 //	@Description	Returns the health status of the service including database connectivity
 //	@Tags			health
 //	@Produce		json
-//	@Success		200	{object}	[]models.ServiceStatus
+//	@Success		200	{object}	models.Response
 //	@Router			/healthz [get]
 //
 // @Security ApiKeyAuth

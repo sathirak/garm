@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/sathirak/garm/internal/errors"
+	"github.com/sathirak/garm/internal/errx"
 	"github.com/sathirak/garm/internal/validator"
 	"github.com/sathirak/garm/models"
 	"github.com/sathirak/garm/models/dto"
@@ -13,7 +13,7 @@ import (
 func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, error) {
 
 	if !validator.ValidateSignUp(signUpDto) {
-		return nil, errors.ErrInvalidUserData
+		return nil, errx.ErrInvalidUserData
 	}
 
 	if err := validator.ValidatePassword(signUpDto.Password); err != nil {
@@ -48,11 +48,11 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, error) {
 
 	if !validator.ValidateSignIn(signInDto) {
-		return nil, errors.ErrInvalidUserData
+		return nil, errx.ErrInvalidUserData
 	}
 
 	if repository.IsEmailAvailable(signInDto.Email) {
-		return nil, errors.ErrInvalidUserData
+		return nil, errx.ErrInvalidUserData
 	}
 
 	credentails, err := repository.GetCredentialsEmailPassword(signInDto.Email)
