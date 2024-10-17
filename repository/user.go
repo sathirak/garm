@@ -19,7 +19,9 @@ func IsEmailAvailable(email string) (bool, error) {
 
 	if err == sql.ErrNoRows {
 		return true, nil
-	} else if err != nil {
+	}
+
+	if err != nil {
 		return false, err
 	}
 

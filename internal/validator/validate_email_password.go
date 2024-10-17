@@ -2,18 +2,19 @@ package validator
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/sathirak/garm/internal/errx"
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/pkg/logger"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
-var validate *validator.Validate
+var Validate *validator.Validate
 
-func ValidateSignUp(signUpDto *dto.SignUpEmailPassword) error {
+func ValidateSignUp(signUpDto *dto.SignUpEmailPassword) errx.Errx {
 	log := logger.Get()
-	validate = validator.New(validator.WithRequiredStructEnabled())
+	Validate = validator.New(validator.WithRequiredStructEnabled())
 
-	err := validate.Struct(signUpDto)
+	err := Validate.Struct(signUpDto)
 	if err != nil {
 
 		// this check is only needed when your code could produce
@@ -21,27 +22,13 @@ func ValidateSignUp(signUpDto *dto.SignUpEmailPassword) error {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return err
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-			log.Info(err.Namespace())
-			log.Info(err.Field())
-			log.Info(err.StructNamespace())
-			log.Info(err.StructField())
-			log.Info(err.Tag())
-			log.Info(err.ActualTag())
-			log.Info(err.Kind())
-			log.Info(err.Type())
-			log.Info(err.Value())
-			log.Info(err.Param())
-			log.Info()
+			return errx.NewError(err, errx.ErrInternalServerErr)
 		}
 
 		// from here you can create your own error messages in whatever language you wish
-		return err
+		return errx.NewError(nil, errx.ErrUnprocessableContent)
 	}
-	return nil
+	return errx.Nil()
 }
 
 func ValidatePassword(password string) error {
@@ -50,11 +37,11 @@ func ValidatePassword(password string) error {
 	return passwordvalidator.Validate(password, minEntropyBits)
 }
 
-func ValidateSignIn(signInDto *dto.SignInEmailPassword) error {
+func ValidateSignIn(signInDto *dto.SignInEmailPassword) errx.Errx {
 	log := logger.Get()
-	validate = validator.New(validator.WithRequiredStructEnabled())
+	Validate = validator.New(validator.WithRequiredStructEnabled())
 
-	err := validate.Struct(signInDto)
+	err := Validate.Struct(signInDto)
 	if err != nil {
 
 		// this check is only needed when your code could produce
@@ -62,25 +49,11 @@ func ValidateSignIn(signInDto *dto.SignInEmailPassword) error {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return err
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-			log.Info(err.Namespace())
-			log.Info(err.Field())
-			log.Info(err.StructNamespace())
-			log.Info(err.StructField())
-			log.Info(err.Tag())
-			log.Info(err.ActualTag())
-			log.Info(err.Kind())
-			log.Info(err.Type())
-			log.Info(err.Value())
-			log.Info(err.Param())
-			log.Info()
+			return errx.NewError(err, errx.ErrInternalServerErr)
 		}
 
 		// from here you can create your own error messages in whatever language you wish
-		return err
+		return errx.NewError(nil, errx.ErrUnprocessableContent)
 	}
-	return nil
+	return errx.Nil()
 }

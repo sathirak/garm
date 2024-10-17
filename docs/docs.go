@@ -112,10 +112,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ServiceStatus"
-                            }
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -185,17 +182,18 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ServiceStatus": {
+        "models.Response": {
             "type": "object",
             "properties": {
-                "service": {
+                "data": {},
+                "error": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
-                },
-                "timestamp": {
-                    "type": "integer"
                 }
             }
         },

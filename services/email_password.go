@@ -12,6 +12,10 @@ import (
 
 func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, errx.Errx) {
 
+	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
+		return nil, err
+	}
+
 	IsAvailable, err := repository.IsEmailAvailable(signUpDto.Email)
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
@@ -19,10 +23,6 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 
 	if !IsAvailable {
 		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
-	}
-
-	if err = validator.ValidateSignUp(signUpDto); err != nil {
-		return nil, errx.NewError(err, errx.ErrUnprocessableContent)
 	}
 
 	if err := validator.ValidatePassword(signUpDto.Password); err != nil {
@@ -56,12 +56,16 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 
 func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, errx.Errx) {
 
-	if err := validator.ValidateSignIn(signInDto); err != nil {
-		return nil, errx.NewError(err, errx.ErrUnprocessableContent)
+	if err := validator.ValidateSignIn(signInDto); !err.IsNil() {
+		return nil, err
+	}
+	IsAvailable, err := repository.IsEmailAvailable(signInDto.Email)
+	if err != nil {
+		return nil, errx.NewError(err, errx.ErrEmailUnavailable)
 	}
 
-	if _, err := repository.IsEmailAvailable(signInDto.Email); err != nil {
-		return nil, errx.NewError(err, errx.ErrEmailUnavailable)
+	if IsAvailable {
+		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
 	}
 
 	credentails, err := repository.GetCredentialsEmailPassword(signInDto.Email)
