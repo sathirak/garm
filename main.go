@@ -59,7 +59,8 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-quit
-		db.Close()
+		defer db.Close()
+		defer logger.Close()
 		log.Infow("shutdown", "package", "main", "status", "ok")
 		os.Exit(0)
 	}()
