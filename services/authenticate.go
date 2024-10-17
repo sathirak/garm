@@ -30,5 +30,5 @@ func Authenticate(c *gin.Context) errx.Errx {
 			return errx.NewError(err, errx.ErrInvalidToken)
 		}
 	}
-	return errx.NewError(nil, nil)
+	return errx.Nil()
 }

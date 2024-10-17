@@ -13,7 +13,7 @@ type JWT struct {
 	ExpiredAt time.Time
 }
 
-func Generate(id string) (string, error) {
+func Generate(id string) (string, errx.Errx) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  id,
@@ -22,36 +22,36 @@ func Generate(id string) (string, error) {
 
 	tokenString, err := token.SignedString(GetKey())
 	if err != nil {
-		return "", err
+		return "", errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
 	bearerToken := "Bearer " + tokenString
 
-	return bearerToken, nil
+	return bearerToken, errx.Nil()
 }
 
-func Parse(bearerToken string) (jwtData *JWT, err error) {
+func Parse(bearerToken string) (jwtData *JWT, err errx.Errx) {
 
 	prefix := "Bearer "
 	if !(len(bearerToken) > len(prefix) && bearerToken[:len(prefix)] == prefix) {
-		return nil, errx.ErrInvalidBearerHeader
+		return nil, errx.NewError(nil, errx.ErrUnauthenticated)
 	}
 
-	token, err := jwt.Parse(bearerToken[len(prefix):], func(token *jwt.Token) (interface{}, error) {
+	token, newErr := jwt.Parse(bearerToken[len(prefix):], func(token *jwt.Token) (interface{}, error) {
 		return GetKey(), nil
 	})
 
-	if err != nil {
-		return nil, err
+	if newErr != nil {
+		return nil, errx.NewError(newErr, errx.ErrUnauthenticated)
 	}
 
 	if !token.Valid {
-		return nil, errx.ErrInvalidToken
+		return nil, errx.NewError(nil, errx.ErrUnauthenticated)
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, errx.ErrInvalidTokenClaims
+		return nil, errx.NewError(nil, errx.ErrUnauthenticated)
 	}
 
 	id := claims["id"].(string)
@@ -60,5 +60,5 @@ func Parse(bearerToken string) (jwtData *JWT, err error) {
 
 	jwtData = &JWT{ID: id, ExpiredAt: expiredAt}
 
-	return jwtData, nil
+	return jwtData, errx.Nil()
 }

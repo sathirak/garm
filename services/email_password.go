@@ -51,7 +51,7 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	return user, errx.NewError(nil, nil)
+	return user, errx.Nil()
 }
 
 func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, errx.Errx) {

@@ -14,6 +14,13 @@ func NewError(svcError, appError error) Errx {
 	}
 }
 
+func Nil() Errx {
+	return Errx{
+		ApiError: nil,
+		SvcError: nil,
+	}
+}
+
 func (e Errx) Error() string {
 	return errors.Join(e.ApiError, e.SvcError).Error()
 }

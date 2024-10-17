@@ -7,11 +7,11 @@ import (
 
 func Set(c *gin.Context, userId string) errx.Errx {
 	bearerToken, err := Generate(userId)
-	if err != nil {
-		return errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return err
 	}
 	c.Header("Authorization", bearerToken)
-	return errx.NewError(nil, nil)
+	return errx.Nil()
 }
 
 func Get(c *gin.Context) (*JWT, errx.Errx) {
@@ -19,8 +19,8 @@ func Get(c *gin.Context) (*JWT, errx.Errx) {
 
 	jwtData, err := Parse(bearerToken)
 
-	if err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return nil, err
 	}
 
 	userJwt := JWT{
@@ -28,7 +28,7 @@ func Get(c *gin.Context) (*JWT, errx.Errx) {
 		ExpiredAt: jwtData.ExpiredAt,
 	}
 
-	return &userJwt, errx.NewError(err, errx.ErrInternalServerErr)
+	return &userJwt, errx.Nil()
 }
 
 func Delete(c *gin.Context) {
