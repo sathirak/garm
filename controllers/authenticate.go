@@ -3,17 +3,18 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/handlers"
+	"github.com/sathirak/garm/models"
 	"github.com/sathirak/garm/services"
 )
 
 func Authenticate(c *gin.Context) {
-
-	err := services.Authenticate(c)
+	var userId models.UserId
+	err := services.Authenticate(c, &userId)
 
 	if !err.IsNil() {
 		handlers.Errorx(c, err)
 		return
 	}
 
-	handlers.SuccessResponse(c)
+	handlers.SuccessWithDataResponse(c, userId)
 }

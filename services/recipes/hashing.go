@@ -116,5 +116,9 @@ func ValidateEmailPassword(hash string, salt string, password string) errx.Errx 
 	}
 
 	err = argon.Compare(decodedHash, decodedSalt, []byte(password))
-	return errx.NewError(err, errx.ErrInvalidCredentials)
+	if err != nil {
+		return errx.NewError(err, errx.ErrInvalidCredentials)
+	}
+
+	return errx.Nil()
 }

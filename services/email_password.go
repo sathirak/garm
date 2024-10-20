@@ -80,5 +80,9 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, 
 
 	userMeta, err := repository.GetUserMeta(credentails.UserID)
 
-	return userMeta, errx.NewError(err, errx.ErrInternalServerErr)
+	if err != nil {
+		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	}
+
+	return userMeta, errx.Nil()
 }

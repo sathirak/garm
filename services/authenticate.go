@@ -7,9 +7,10 @@ import (
 	"github.com/sathirak/garm/internal/config"
 	"github.com/sathirak/garm/internal/errx"
 	"github.com/sathirak/garm/internal/jwt"
+	"github.com/sathirak/garm/models"
 )
 
-func Authenticate(c *gin.Context) errx.Errx {
+func Authenticate(c *gin.Context, userId *models.UserId) (err errx.Errx) {
 
 	token, err := jwt.Get(c)
 
@@ -30,5 +31,6 @@ func Authenticate(c *gin.Context) errx.Errx {
 			return errx.NewError(err, errx.ErrInvalidToken)
 		}
 	}
+	userId.ID = token.ID
 	return errx.Nil()
 }
