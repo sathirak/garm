@@ -117,6 +117,24 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/policies": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns policies of garm",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "policy"
+                ],
+                "summary": "Policies for all services",
+                "responses": {}
+            }
         }
     },
     "definitions": {

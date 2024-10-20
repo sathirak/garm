@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "policies": [
+    {
+      "resource": "property",
+      "rules": [
+        {
+          "actions": [
+            "*"
+          ],
+          "effect": "allow",
+          "roles": [
+            "admin"
+          ]
+        },
+        {
+          "actions": [
+            "create"
+          ],
+          "effect": "allow",
+          "roles": [
+            "user"
+          ]
+        }
+      ]
+    }
+  ]
+}

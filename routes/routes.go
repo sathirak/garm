@@ -15,6 +15,8 @@ func SetupRoutes(r *gin.Engine) {
 		// Authenticate all users
 		auth.GET("/", controllers.Authenticate)
 
+		auth.GET("/policies", controllers.Authorize)
+
 		// Email Password recipe
 		auth.POST("/email-password/sign-up", controllers.SignUpEmailPassword)
 		auth.POST("/email-password/sign-in", controllers.SignInEmailPassword)

@@ -150,6 +150,17 @@ paths:
       summary: Check the health of the service
       tags:
       - health
+  /policies:
+    get:
+      description: Returns policies of garm
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Policies for all services
+      tags:
+      - policy
 securityDefinitions:
   ApiKeyAuth:
     in: header

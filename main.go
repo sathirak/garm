@@ -26,10 +26,9 @@ import (
 //	@host		localhost:9000
 //	@BasePath	/api/v1/auth/
 
-//	@securityDefinitions.apikey	ApiKeyAuth
-//	@in							header
-//	@name						x-api-token
-
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						x-api-token
 func main() {
 	logger.Initialize()
 	config.Initialize()
