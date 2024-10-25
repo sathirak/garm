@@ -78,3 +78,21 @@ func SignInEmailPassword(c *gin.Context) {
 
 	handlers.SuccessWithDataResponse(c, user)
 }
+
+func ResetEmailPassword(c *gin.Context) {
+	var resetPasswordDto dto.ResetEmailCredentials
+
+  userID := c.Param("userID")
+
+	if err := c.ShouldBindJSON(&resetPasswordDto); err != nil {
+		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
+		return
+	}
+
+	if err := services.ResetEmailPassword(&resetPasswordDto, userID); !err.IsNil() {
+		handlers.Errorx(c, err)
+		return
+	}
+
+	handlers.SuccessResponse(c)
+}

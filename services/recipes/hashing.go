@@ -90,7 +90,7 @@ func (a *Argon2idHash) Compare(hash, salt, password []byte) error {
 	return nil
 }
 
-func CreateEmailPassword(userID string, password string) (string, string, error) {
+func GenerateHashSalt(password string) (string, string, error) {
 
 	argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
 	hashSalt, err := argon.GenerateHash([]byte(password), nil)

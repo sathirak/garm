@@ -14,9 +14,17 @@ func Gen() ksuid.KSUID {
 			continue
 		}
 
-		if repository.IsIDAvailable(id.String()) {
+		isAvailable, err := repository.IsIDAvailable(id.String())
+
+		if err != nil {
+			logger.Get().Errorw("onprocess", "package", "ksuid", "error", err.Error())
+			continue
+		}
+
+		if isAvailable {
 			return id
 		}
+
 	}
 }
 

@@ -42,7 +42,7 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	hash, salt, err := recipes.CreateEmailPassword(user.ID, signUpDto.Password)
+	hash, salt, err := recipes.GenerateHashSalt(signUpDto.Password)
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
@@ -85,4 +85,45 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, 
 	}
 
 	return userMeta, errx.Nil()
+}
+
+func ResetEmailPassword(resetDto *dto.ResetEmailCredentials, userID string) errx.Errx {
+
+	if err := validator.ValidatePassword(resetDto.NewPassword); err != nil {
+		return errx.NewError(err, errx.ErrPasswordInvalid)
+	}
+
+	IsAvailable, err := repository.IsIDAvailable(userID)
+	if err != nil {
+		return errx.NewError(err, errx.ErrEmailUnavailable)
+	}
+
+	if IsAvailable {
+		return errx.NewError(nil, errx.ErrEmailUnavailable)
+	}
+
+	credentails, err := repository.GetCredentialsEmailPassword(resetDto.Email)
+
+	if err != nil {
+		return errx.NewError(err, errx.ErrInternalServerErr)
+	}
+
+	if credentails.UserID != userID {
+		return errx.NewError(err, errx.ErrUnprocessableContent)
+	}
+
+	if err := recipes.ValidateEmailPassword(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
+		return err
+	}
+
+	hash, salt, err := recipes.GenerateHashSalt(resetDto.NewPassword)
+	if err != nil {
+		return errx.NewError(err, errx.ErrInternalServerErr)
+	}
+
+	if err = repository.UpdateEmailPassword(userID, salt, hash); err != nil {
+		return errx.NewError(err, errx.ErrInternalServerErr)
+	}
+
+	return errx.Nil()
 }

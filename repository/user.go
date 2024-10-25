@@ -29,7 +29,8 @@ func IsEmailAvailable(email string) (bool, error) {
 	return false, nil
 }
 
-func IsIDAvailable(id string) bool {
+func IsIDAvailable(id string) (bool, error) {
+	// If ID is not in table returns true
 	conn := db.Get()
 
 	var existingID string
@@ -39,11 +40,15 @@ func IsIDAvailable(id string) bool {
 		id).Scan(&existingID)
 
 	if err == sql.ErrNoRows {
-		return err == sql.ErrNoRows
+		return true, nil
+	}
+
+	if err != nil {
+		return false, err
 	}
 
 	// If there's an error (other than no rows) or if an id is found, it's not available
-	return false
+	return false, nil
 }
 
 func CreateUser(user *models.UserMeta) error {
