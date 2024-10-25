@@ -79,10 +79,23 @@ func SignInEmailPassword(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user)
 }
 
+// ResetEmailPassword godoc
+//
+//	@Summary		Reset password
+//	@Description	Resets the password for the user
+//	@Tags			email-password
+//	@Accept			json
+//	@Produce		json
+//	@Param			userID			path		string						true	"User ID"
+//	@Param			resetPasswordDto	body		dto.ResetEmailCredentials	true	"Reset Password Data"
+//	@Success		200			{object}	models.UserMeta
+//	@Router			/email-password/reset/{userID} [post]
+//
+//	@Security		ApiKeyAuth
 func ResetEmailPassword(c *gin.Context) {
 	var resetPasswordDto dto.ResetEmailCredentials
 
-  userID := c.Param("userID")
+	userID := c.Param("userID")
 
 	if err := c.ShouldBindJSON(&resetPasswordDto); err != nil {
 		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
