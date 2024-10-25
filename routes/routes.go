@@ -18,5 +18,8 @@ func SetupRoutes(r *gin.Engine) {
 		// Email Password recipe
 		auth.POST("/email-password/sign-up", controllers.SignUpEmailPassword)
 		auth.POST("/email-password/sign-in", controllers.SignInEmailPassword)
+
+    // Reset Email password credentials
+    auth.POST("/email-password/reset/:userID", controllers.ResetEmailPassword)
 	}
 }
