@@ -37,6 +37,10 @@ func ValidatePassword(password string) error {
 	return passwordvalidator.Validate(password, minEntropyBits)
 }
 
+func CheckPasswordEntropy(password string) float64 {
+	return passwordvalidator.GetEntropy(password)
+}
+
 func ValidateSignIn(signInDto *dto.SignInEmailPassword) errx.Errx {
 	log := logger.Get()
 	Validate = validator.New(validator.WithRequiredStructEnabled())

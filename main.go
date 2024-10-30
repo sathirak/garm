@@ -50,7 +50,6 @@ func main() {
 
 	r.Use(requestid.New())
 	r.Use(middlewares.Logger())
-	r.Use(middlewares.ApiKeyAuth())
 	routes.SetupRoutes(r)
 
 	// Graceful shutdown
