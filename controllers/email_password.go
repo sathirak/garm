@@ -9,18 +9,6 @@ import (
 	"github.com/sathirak/garm/services"
 )
 
-// SignUpEmailPassword godoc
-//
-//	@Summary		Sign up with email and password
-//	@Description	Creates a new user account using email and password
-//	@Tags			email-password
-//	@Accept			json
-//	@Produce		json
-//	@Param			signUpDto	body		dto.SignUpEmailPassword	true	"Sign Up Data"
-//	@Success		200			{object}	models.UserMeta
-//	@Router			/email-password/sign-up [post]
-//
-//	@Security		ApiKeyAuth
 func SignUpEmailPassword(c *gin.Context) {
 	var signUpDto dto.SignUpEmailPassword
 
@@ -44,18 +32,6 @@ func SignUpEmailPassword(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user)
 }
 
-// SignInEmailPassword godoc
-//
-//	@Summary		Sign In with email and password
-//	@Description	Returns a JWT token for the user
-//	@Tags			email-password
-//	@Accept			json
-//	@Produce		json
-//	@Param			signUpDto	body		dto.SignInEmailPassword	true	"Sign In Data"
-//	@Success		200			{object}	models.UserMeta
-//	@Router			/email-password/sign-in [post]
-//
-//	@Security		ApiKeyAuth
 func SignInEmailPassword(c *gin.Context) {
 	var signInDto dto.SignInEmailPassword
 
@@ -79,19 +55,6 @@ func SignInEmailPassword(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user)
 }
 
-// ResetEmailPassword godoc
-//
-//	@Summary		Reset password
-//	@Description	Resets the password for the user
-//	@Tags			email-password
-//	@Accept			json
-//	@Produce		json
-//	@Param			userID			path		string						true	"User ID"
-//	@Param			resetPasswordDto	body		dto.ResetEmailCredentials	true	"Reset Password Data"
-//	@Success		200			{object}	models.UserMeta
-//	@Router			/email-password/reset/{userID} [post]
-//
-//	@Security		ApiKeyAuth
 func ResetEmailPassword(c *gin.Context) {
 	var resetPasswordDto dto.ResetEmailCredentials
 

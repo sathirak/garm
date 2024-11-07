@@ -21,7 +21,7 @@ func SetupRoutes(r *gin.Engine) {
 
 		// Private routes
 		service := auth.Group("/service")
-    service.Use(middlewares.ApiKeyAuth())
+		service.Use(middlewares.ApiKeyAuth())
 		service.GET("/", controllers.Authenticate)
 	}
 }

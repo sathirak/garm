@@ -1,4 +1,4 @@
-package recipes
+package services
 
 import (
 	"bytes"

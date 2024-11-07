@@ -6,8 +6,6 @@ import (
 	"github.com/sathirak/garm/models"
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/repository"
-
-	"github.com/sathirak/garm/services/recipes"
 )
 
 func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, errx.Errx) {
@@ -42,7 +40,7 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	hash, salt, err := recipes.GenerateHashSalt(signUpDto.Password)
+	hash, salt, err := GenerateHashSalt(signUpDto.Password)
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
@@ -74,7 +72,7 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, 
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err := recipes.ValidateEmailPassword(credentails.Hash, credentails.Salt, signInDto.Password); !err.IsNil() {
+	if err := ValidateEmailPassword(credentails.Hash, credentails.Salt, signInDto.Password); !err.IsNil() {
 		return nil, err
 	}
 
@@ -112,11 +110,11 @@ func ResetEmailPassword(resetDto *dto.ResetEmailCredentials, userID string) errx
 		return errx.NewError(err, errx.ErrUnprocessableContent)
 	}
 
-	if err := recipes.ValidateEmailPassword(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
+	if err := ValidateEmailPassword(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
 		return err
 	}
 
-	hash, salt, err := recipes.GenerateHashSalt(resetDto.NewPassword)
+	hash, salt, err := GenerateHashSalt(resetDto.NewPassword)
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}

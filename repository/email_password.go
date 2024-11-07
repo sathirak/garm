@@ -6,19 +6,19 @@ import (
 )
 
 func CreateEmailPassword(userID string, salt string, hash string) error {
-  conn := db.Get()
+	conn := db.Get()
 
-  _, err := conn.Query("INSERT INTO email_credential (user_id, salt, hash) VALUES ($1, $2, $3);", userID, salt, hash)
+	_, err := conn.Query("INSERT INTO email_credential (user_id, salt, hash) VALUES ($1, $2, $3);", userID, salt, hash)
 
-  return err
+	return err
 }
 
 func UpdateEmailPassword(userID string, salt string, hash string) error {
-  conn := db.Get()
+	conn := db.Get()
 
-  _, err := conn.Query("UPDATE email_credential SET salt = $1, hash = $2 WHERE user_id = $3;", salt, hash, userID)
+	_, err := conn.Query("UPDATE email_credential SET salt = $1, hash = $2 WHERE user_id = $3;", salt, hash, userID)
 
-  return err
+	return err
 }
 
 func GetCredentialsEmailPassword(email string) (*dto.EmailCredentials, error) {
