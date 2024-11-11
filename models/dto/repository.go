@@ -2,12 +2,9 @@ package dto
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
-type EmailCredentials struct {
-	ID        uuid.UUID `json:"id"`
+type UserCredentials struct {
 	UserID    string    `json:"user_id"`
 	Salt      string    `json:"salt"`
 	Hash      string    `json:"hash"`

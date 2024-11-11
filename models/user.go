@@ -23,12 +23,6 @@ type UserMeta struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
-// public user scope
-type UserPublic struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-}
-
-type UserId struct {
+type UserAuthenticate struct {
 	ID string `json:"id"`
 }
