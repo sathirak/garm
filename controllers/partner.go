@@ -9,8 +9,8 @@ import (
 	"github.com/sathirak/garm/services"
 )
 
-func SignUpPartner(c *gin.Context) {
-	var signUpDTO dto.SignUpPartner
+func SignUpUser(c *gin.Context) {
+	var signUpDTO dto.SignUpUser
 
 	if err := c.ShouldBindJSON(&signUpDTO); err != nil {
 		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
@@ -32,15 +32,15 @@ func SignUpPartner(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user)
 }
 
-func SignInPartner(c *gin.Context) {
-	var signInDTO dto.SignInPartner
+func SignInUser(c *gin.Context) {
+	var signInDTO dto.SignInUser
 
 	if err := c.ShouldBindJSON(&signInDTO); err != nil {
 		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
 		return
 	}
 
-	user, err := services.SignInPartner(&signInDTO)
+	user, err := services.SignInUser(&signInDTO)
 
 	if !err.IsNil() {
 		handlers.Errorx(c, err)
@@ -55,15 +55,15 @@ func SignInPartner(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user)
 }
 
-func ResetPasswordPartner(c *gin.Context) {
-	var resetPasswordDTO dto.ResetPasswordPartner
+func ResetPasswordUser(c *gin.Context) {
+	var resetPasswordDTO dto.ResetPasswordUser
 
 	if err := c.ShouldBindJSON(&resetPasswordDTO); err != nil {
 		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
 		return
 	}
 
-	if err := services.ResetPasswordPartner(&resetPasswordDTO, c); !err.IsNil() {
+	if err := services.ResetPasswordUser(&resetPasswordDTO, c); !err.IsNil() {
 		handlers.Errorx(c, err)
 		return
 	}

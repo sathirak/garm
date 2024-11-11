@@ -8,7 +8,7 @@ import (
 	"github.com/sathirak/garm/services"
 )
 
-func CheckPasswordPartner(c *gin.Context) {
+func CheckPasswordUser(c *gin.Context) {
 	var passwordCheckDTO dto.PasswordCheck
 
 	if err := c.ShouldBindJSON(&passwordCheckDTO); err != nil {

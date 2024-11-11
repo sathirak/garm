@@ -10,7 +10,7 @@ import (
 
 var Validate *validator.Validate
 
-func ValidateSignUp(signUpDto *dto.SignUpPartner) errx.Errx {
+func ValidateSignUp(signUpDto *dto.SignUpUser) errx.Errx {
 	log := logger.Get()
 	Validate = validator.New(validator.WithRequiredStructEnabled())
 
@@ -41,7 +41,7 @@ func CheckPasswordEntropy(password string) float64 {
 	return passwordvalidator.GetEntropy(password)
 }
 
-func ValidateSignIn(signInDto *dto.SignInPartner) errx.Errx {
+func ValidateSignIn(signInDto *dto.SignInUser) errx.Errx {
 	log := logger.Get()
 	Validate = validator.New(validator.WithRequiredStructEnabled())
 

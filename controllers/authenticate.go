@@ -7,7 +7,7 @@ import (
 	"github.com/sathirak/garm/services"
 )
 
-func AuthenticatePartner(c *gin.Context) {
+func AuthenticateUser(c *gin.Context) {
 	var userId models.UserId
 	err := services.Authenticate(c, &userId)
 

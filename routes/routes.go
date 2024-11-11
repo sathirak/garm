@@ -15,16 +15,16 @@ func SetupRoutes(r *gin.Engine) {
 		// Public routes
 		auth.GET("/healthz", controllers.Healthz)
 
-		partner := auth.Group("/partner")
-		partner.POST("/password-check", controllers.CheckPasswordPartner)
-		partner.POST("/sign-up", controllers.SignUpPartner)
-		partner.POST("/sign-in", controllers.SignInPartner)
+		user := auth.Group("/user")
+		user.POST("/password-check", controllers.CheckPasswordUser)
+		user.POST("/sign-up", controllers.SignUpUser)
+		user.POST("/sign-in", controllers.SignInUser)
 
-		partner.POST("/reset", controllers.ResetPasswordPartner)
+		user.POST("/reset", controllers.ResetPasswordUser)
 
 		// Private routes
 		service := auth.Group("/service")
 		service.Use(middlewares.ApiKeyAuth())
-		service.GET("/", controllers.AuthenticatePartner)
+		service.GET("/", controllers.AuthenticateUser)
 	}
 }
