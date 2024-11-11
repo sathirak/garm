@@ -15,7 +15,7 @@ func Authenticate(c *gin.Context, userId *models.UserId) (err errx.Errx) {
 	token, err := jwt.Get(c)
 
 	if !err.IsNil() {
-		return errx.NewError(err, errx.ErrInvalidToken)
+		return err
 	}
 
 	if token.ExpiredAt.Before(time.Now()) {

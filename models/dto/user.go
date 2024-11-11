@@ -9,17 +9,17 @@ type UserInit struct {
 	Locale      string `json:"locale" validate:"required,len=2,alpha"`
 }
 
-type SignUpEmailPassword struct {
+type SignUpPartner struct {
 	UserInit
 	Password string `json:"password" validate:"required,min=8,max=100"`
 }
 
-type SignInEmailPassword struct {
+type SignInPartner struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8,max=100"`
 }
 
-type ResetEmailCredentials struct {
+type ResetPasswordPartner struct {
 	Email       string `json:"email" validate:"required,email"`
 	OldPassword string `json:"old_password" validate:"required,min=8,max=100"`
 	NewPassword string `json:"new_password" validate:"required,min=8,max=100"`

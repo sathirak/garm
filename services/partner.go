@@ -1,14 +1,16 @@
 package services
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/internal/errx"
+	"github.com/sathirak/garm/internal/jwt"
 	"github.com/sathirak/garm/internal/validator"
 	"github.com/sathirak/garm/models"
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/repository"
 )
 
-func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, errx.Errx) {
+func SignUpPassword(signUpDto *dto.SignUpPartner) (*models.UserMeta, errx.Errx) {
 
 	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
 		return nil, err
@@ -52,7 +54,7 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 	return user, errx.Nil()
 }
 
-func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, errx.Errx) {
+func SignInPartner(signInDto *dto.SignInPartner) (*models.UserMeta, errx.Errx) {
 
 	if err := validator.ValidateSignIn(signInDto); !err.IsNil() {
 		return nil, err
@@ -85,29 +87,20 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, 
 	return userMeta, errx.Nil()
 }
 
-func ResetEmailPassword(resetDto *dto.ResetEmailCredentials, userID string) errx.Errx {
+func ResetPasswordPartner(resetDto *dto.ResetPasswordPartner, c *gin.Context) errx.Errx {
+
+	if _, err := jwt.Get(c); !err.IsNil() {
+		return err
+	}
 
 	if err := validator.ValidatePassword(resetDto.NewPassword); err != nil {
 		return errx.NewError(err, errx.ErrPasswordInvalid)
-	}
-
-	IsAvailable, err := repository.IsIDAvailable(userID)
-	if err != nil {
-		return errx.NewError(err, errx.ErrEmailUnavailable)
-	}
-
-	if IsAvailable {
-		return errx.NewError(nil, errx.ErrEmailUnavailable)
 	}
 
 	credentails, err := repository.GetCredentialsEmailPassword(resetDto.Email)
 
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
-	}
-
-	if credentails.UserID != userID {
-		return errx.NewError(err, errx.ErrUnprocessableContent)
 	}
 
 	if err := ValidateEmailPassword(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
@@ -119,7 +112,7 @@ func ResetEmailPassword(resetDto *dto.ResetEmailCredentials, userID string) errx
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err = repository.UpdateEmailPassword(userID, salt, hash); err != nil {
+	if err = repository.UpdateEmailPassword(credentails.UserID, salt, hash); err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 

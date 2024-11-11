@@ -55,10 +55,10 @@ func CreateUser(user *models.UserMeta) error {
 	conn := db.Get()
 
 	row := conn.QueryRow(
-		`INSERT INTO "user" (id, first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		`INSERT INTO "user" (first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      RETURNING id, first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at;`,
-		user.ID, user.FirstName, user.LastName, user.Email, user.VerifiedEmail, user.Locale, user.ContactNo, user.CountryCode, user.CreatedAt, user.UpdatedAt)
+		user.FirstName, user.LastName, user.Email, user.VerifiedEmail, user.Locale, user.ContactNo, user.CountryCode, user.CreatedAt, user.UpdatedAt)
 
 	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.VerifiedEmail, &user.Locale, &user.ContactNo, &user.CountryCode, &user.CreatedAt, &user.UpdatedAt)
 

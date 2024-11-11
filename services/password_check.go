@@ -1,6 +1,8 @@
 package services
 
 import (
+	"math"
+
 	"github.com/sathirak/garm/internal/validator"
 	"github.com/sathirak/garm/models"
 )
@@ -8,8 +10,7 @@ import (
 func PasswordCheck(password string) models.PasswordCheck {
 
 	entropy := validator.CheckPasswordEntropy(password)
-
-	return models.PasswordCheck{
-		Strength: entropy,
-	}
+  return models.PasswordCheck{
+    Strength: int(math.Floor(entropy)),
+  }
 }
