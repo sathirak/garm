@@ -5,6 +5,7 @@ import (
 
 	"github.com/sathirak/garm/internal/db"
 	"github.com/sathirak/garm/models"
+	"github.com/sathirak/garm/models/dto"
 )
 
 func IsEmailAvailable(email string) (bool, error) {
@@ -51,7 +52,8 @@ func IsIDAvailable(id string) (bool, error) {
 	return false, nil
 }
 
-func CreateUser(user *models.UserMeta) error {
+func CreateUser(user *dto.UserCreate) (*models.UserMeta, error) {
+	var userMeta models.UserMeta
 	conn := db.Get()
 
 	row := conn.QueryRow(
@@ -60,13 +62,13 @@ func CreateUser(user *models.UserMeta) error {
      RETURNING id, first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at;`,
 		user.FirstName, user.LastName, user.Email, user.VerifiedEmail, user.Locale, user.ContactNo, user.CountryCode, user.CreatedAt, user.UpdatedAt)
 
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.VerifiedEmail, &user.Locale, &user.ContactNo, &user.CountryCode, &user.CreatedAt, &user.UpdatedAt)
+	err := row.Scan(&userMeta.ID, &userMeta.FirstName, &userMeta.LastName, &userMeta.Email, &userMeta.VerifiedEmail, &userMeta.Locale, &userMeta.ContactNo, &userMeta.CountryCode, &userMeta.CreatedAt, &userMeta.UpdatedAt)
 
 	if err != nil {
-		return err
+		return &userMeta,err
 	}
 
-	return nil
+	return &userMeta, nil
 }
 
 func GetUserMeta(id string) (*models.UserMeta, error) {

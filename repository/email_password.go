@@ -21,7 +21,7 @@ func UpdateEmailPassword(userID string, salt string, hash string) error {
 	return err
 }
 
-func GetCredentialsEmailPassword(email string) (*dto.EmailCredentials, error) {
+func GetUserCredentials(email string) (*dto.EmailCredentials, error) {
 	conn := db.Get()
 
 	var credentials dto.EmailCredentials

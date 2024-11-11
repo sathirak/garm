@@ -10,7 +10,7 @@ import (
 	"github.com/sathirak/garm/repository"
 )
 
-func SignUpPassword(signUpDto *dto.SignUpPartner) (*models.UserMeta, errx.Errx) {
+func SignUpPassword(signUpDto *dto.SignUpUser) (*models.UserMeta, errx.Errx) {
 
 	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
 		return nil, err
@@ -54,7 +54,7 @@ func SignUpPassword(signUpDto *dto.SignUpPartner) (*models.UserMeta, errx.Errx) 
 	return user, errx.Nil()
 }
 
-func SignInPartner(signInDto *dto.SignInPartner) (*models.UserMeta, errx.Errx) {
+func SignInUser(signInDto *dto.SignInUser) (*models.UserMeta, errx.Errx) {
 
 	if err := validator.ValidateSignIn(signInDto); !err.IsNil() {
 		return nil, err
@@ -68,7 +68,7 @@ func SignInPartner(signInDto *dto.SignInPartner) (*models.UserMeta, errx.Errx) {
 		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
 	}
 
-	credentails, err := repository.GetCredentialsEmailPassword(signInDto.Email)
+	credentails, err := repository.GetUserCredentials(signInDto.Email)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
@@ -87,7 +87,7 @@ func SignInPartner(signInDto *dto.SignInPartner) (*models.UserMeta, errx.Errx) {
 	return userMeta, errx.Nil()
 }
 
-func ResetPasswordPartner(resetDto *dto.ResetPasswordPartner, c *gin.Context) errx.Errx {
+func ResetPasswordUser(resetDto *dto.ResetPasswordUser, c *gin.Context) errx.Errx {
 
 	if _, err := jwt.Get(c); !err.IsNil() {
 		return err
@@ -97,7 +97,7 @@ func ResetPasswordPartner(resetDto *dto.ResetPasswordPartner, c *gin.Context) er
 		return errx.NewError(err, errx.ErrPasswordInvalid)
 	}
 
-	credentails, err := repository.GetCredentialsEmailPassword(resetDto.Email)
+	credentails, err := repository.GetUserCredentials(resetDto.Email)
 
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)

@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type UserInit struct {
 	FirstName   string `json:"first_name" validate:"required,min=1,max=50,alpha"`
 	LastName    string `json:"last_name" validate:"required,min=1,max=50,alpha"`
@@ -9,17 +11,24 @@ type UserInit struct {
 	Locale      string `json:"locale" validate:"required,len=2,alpha"`
 }
 
-type SignUpPartner struct {
+type UserCreate struct {
+	UserInit
+	VerifiedEmail bool
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}
+
+type SignUpUser struct {
 	UserInit
 	Password string `json:"password" validate:"required,min=8,max=100"`
 }
 
-type SignInPartner struct {
+type SignInUser struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8,max=100"`
 }
 
-type ResetPasswordPartner struct {
+type ResetPasswordUser struct {
 	Email       string `json:"email" validate:"required,email"`
 	OldPassword string `json:"old_password" validate:"required,min=8,max=100"`
 	NewPassword string `json:"new_password" validate:"required,min=8,max=100"`
