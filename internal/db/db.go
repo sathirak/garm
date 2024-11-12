@@ -14,17 +14,17 @@ import (
 var db *sql.DB
 var gormDB *gorm.DB
 
-func GetGorm() *gorm.DB {
+func Get() *gorm.DB {
 	return gormDB.Session(&gorm.Session{PrepareStmt: false})
 }
 
-func Get() *sql.DB {
+func GetRaw() *sql.DB {
 	return db
 }
 
 func Close() {
 	log := logger.Get()
-
+	gormDB.Exec("DEALLOCATE ALL")
 	err := db.Close()
 
 	if err != nil {
@@ -46,14 +46,14 @@ func Initialize() {
 
 	var err error
 
-	gormDB, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
+	gormDB, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{PrepareStmt: true})
 
 	if err != nil {
 		log.Errorw("startup", "package", "db", "error", err.Error())
 	}
 
 	db, err = gormDB.DB()
-  
+
 	gormDB.Exec("DEALLOCATE ALL")
 
 	if err != nil {

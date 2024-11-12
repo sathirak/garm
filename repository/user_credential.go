@@ -6,54 +6,52 @@ import (
 )
 
 func CreateEmailPassword(userID string, salt string, hash string) error {
-
 	userCredential := &models.UserCredentialDB{
 		UserID: userID,
 		Salt:   salt,
 		Hash:   hash,
 	}
-	err := db.GetGorm().Create(&userCredential).Error
+	err := db.Get().Create(&userCredential).Error
 
 	return err
 }
 
-func UpdateEmailPassword(userID string, salt string, hash string) error {
-	conn := db.Get()
+func UpdateEmailPassword(userCredentials *models.UserCredential) error {
 
-	_, err := conn.Query("UPDATE user_credential SET salt = $1, hash = $2 WHERE user_id = $3;", salt, hash, userID)
+	userCredentialDB := &models.UserCredentialDB{
+		UserID: userCredentials.UserID,
+		Salt:   userCredentials.Salt,
+		Hash:   userCredentials.Hash,
+	}
+
+	err := db.Get().Model(userCredentialDB).Updates(models.UserCredentialDB{Hash: userCredentials.Hash, Salt: userCredentials.Salt}).Error
 
 	return err
 }
 
 func GetUserCredentials(email string) (*models.UserCredential, error) {
-	conn := db.Get()
+	var userCredential models.UserCredentialDB
 
-	var userCredentials models.UserCredential
-
-	err := conn.QueryRow(`
-		SELECT uc.user_id, uc.salt, uc.hash, uc.retries
-		FROM user_credential uc
-		JOIN "user" u ON uc.user_id = u.id
-		WHERE u.email = $1;`, email).Scan(
-		&userCredentials.UserID,
-		&userCredentials.Salt,
-		&userCredentials.Hash,
-		&userCredentials.Retries,
-	)
+	err := db.Get().
+		Joins("JOIN \"user\" ON user_credential.user_id = \"user\".id").
+		Where("\"user\".email = ?", email).
+		First(&userCredential).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &userCredentials, nil
+	return &models.UserCredential{
+		UserID:  userCredential.UserID,
+		Salt:    userCredential.Salt,
+		Hash:    userCredential.Hash,
+		Retries: userCredential.Retries,
+	}, nil
 }
 
 func UpdateRetries(retries int, userId string) error {
-
-	conn := db.Get()
-
-	_, err := conn.Query("UPDATE user_credential SET retries = $1 WHERE user_id = $2;", retries, userId)
-
-	return err
-
+	return db.Get().Model(&models.UserCredentialDB{}).
+		Where("user_id = ?", userId).
+		Update("retries", retries).
+		Error
 }

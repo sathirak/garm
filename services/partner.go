@@ -108,12 +108,12 @@ func ResetPasswordUser(resetDto *dto.ResetPasswordUser, c *gin.Context) errx.Err
 		return err
 	}
 
-	hash, salt, err := GenerateHashSalt(resetDto.NewPassword)
+	credentails.Hash, credentails.Salt, err = GenerateHashSalt(resetDto.NewPassword)
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err = repository.UpdateEmailPassword(credentails.UserID, salt, hash); err != nil {
+	if err = repository.UpdateEmailPassword(credentails); err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 

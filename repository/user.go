@@ -11,7 +11,7 @@ import (
 )
 
 func IsEmailAvailable(email string) (bool, error) {
-	err := db.GetGorm().First(&models.UserDB{}, "email = ?", email).Error
+	err := db.Get().First(&models.UserDB{}, "email = ?", email).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return true, nil
@@ -23,7 +23,7 @@ func IsEmailAvailable(email string) (bool, error) {
 }
 
 func IsIDAvailable(id string) (bool, error) {
-	err := db.GetGorm().First(&models.UserDB{}, "id = ?", id).Error
+	err := db.Get().First(&models.UserDB{}, "id = ?", id).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return true, nil
@@ -36,7 +36,7 @@ func IsIDAvailable(id string) (bool, error) {
 
 func GetUserMeta(id string) (*models.User, error) {
 	var user models.UserDB
-	if err := db.GetGorm().First(&user, "id = ?", id).Error; err != nil {
+	if err := db.Get().First(&user, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &models.User{
@@ -52,7 +52,7 @@ func GetUserMeta(id string) (*models.User, error) {
 }
 
 func CreateUser(user *dto.UserCreate, salt string, hash string) (*models.User, error) {
-	conn := db.GetGorm()
+	conn := db.Get()
 
 	userGorm := models.UserDB{
 		FirstName:     user.FirstName,

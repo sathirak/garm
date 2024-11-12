@@ -3,10 +3,10 @@ package models
 import "time"
 
 type UserCredentialDB struct {
-	UserID    string    `gorm:"primaryKey;column:user_id;type:varchar(255)"`
-	Salt      string    `gorm:"column:salt;type:varchar(255);not null"`
-	Hash      string    `gorm:"column:hash;type:varchar(255);not null"`
-	Retries   int       `gorm:"column:retries;default:0"`
+	UserID    string    `gorm:"primaryKey;column:user_id;"`
+	Salt      string    `gorm:"column:salt;"`
+	Hash      string    `gorm:"column:hash;"`
+	Retries   int       `gorm:"column:retries;"`
 	CreatedAt time.Time `gorm:"column:created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
