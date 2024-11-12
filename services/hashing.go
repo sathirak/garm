@@ -102,7 +102,7 @@ func GenerateHashSalt(password string) (string, string, error) {
 	return hash, salt, nil
 }
 
-func ValidateEmailPassword(hash string, salt string, password string) errx.Errx {
+func ValidateCredentials(hash string, salt string, password string) errx.Errx {
 	argon := NewArgon2idHash(1, 16, 64*1024, 4, 32)
 
 	decodedHash, err := base64.StdEncoding.DecodeString(hash)

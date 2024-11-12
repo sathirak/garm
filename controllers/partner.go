@@ -17,7 +17,7 @@ func SignUpUser(c *gin.Context) {
 		return
 	}
 
-	user, err := services.SignUpPassword(&signUpDTO)
+	user, err := services.SignUpUser(&signUpDTO)
 
 	if !err.IsNil() {
 		handlers.Errorx(c, err)

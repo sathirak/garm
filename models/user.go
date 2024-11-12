@@ -26,3 +26,14 @@ type UserMeta struct {
 type UserAuthenticate struct {
 	ID string `json:"id"`
 }
+
+type UserCredentials struct {
+	UserID  string
+	Salt    string
+	Hash    string
+	Retries int
+}
+
+type PasswordCheck struct {
+	Strength int `json:"strength"`
+}

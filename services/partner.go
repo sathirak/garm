@@ -10,7 +10,7 @@ import (
 	"github.com/sathirak/garm/repository"
 )
 
-func SignUpPassword(signUpDto *dto.SignUpUser) (*models.UserMeta, errx.Errx) {
+func SignUpUser(signUpDto *dto.SignUpUser) (*models.UserMeta, errx.Errx) {
 
 	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
 		return nil, err
@@ -29,7 +29,12 @@ func SignUpPassword(signUpDto *dto.SignUpUser) (*models.UserMeta, errx.Errx) {
 		return nil, errx.NewError(err, errx.ErrPasswordInvalid)
 	}
 
-	user, err := CreateUser(&dto.UserInit{
+	hash, salt, err := GenerateHashSalt(signUpDto.Password)
+	if err != nil {
+		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	}
+
+	userMeta, err := CreateUser(&dto.UserInit{
 		FirstName:   signUpDto.FirstName,
 		LastName:    signUpDto.LastName,
 		Email:       signUpDto.Email,
@@ -42,16 +47,11 @@ func SignUpPassword(signUpDto *dto.SignUpUser) (*models.UserMeta, errx.Errx) {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	hash, salt, err := GenerateHashSalt(signUpDto.Password)
-	if err != nil {
+	if err = repository.CreateEmailPassword(userMeta.ID, salt, hash); err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err = repository.CreateEmailPassword(user.ID, salt, hash); err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
-	}
-
-	return user, errx.Nil()
+	return userMeta, errx.Nil()
 }
 
 func SignInUser(signInDto *dto.SignInUser) (*models.UserMeta, errx.Errx) {
@@ -68,17 +68,22 @@ func SignInUser(signInDto *dto.SignInUser) (*models.UserMeta, errx.Errx) {
 		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
 	}
 
-	credentails, err := repository.GetUserCredentials(signInDto.Email)
+	userCredentials, err := repository.GetUserCredentials(signInDto.Email)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err := ValidateEmailPassword(credentails.Hash, credentails.Salt, signInDto.Password); !err.IsNil() {
+	if err := ValidateCredentials(userCredentials.Hash, userCredentials.Salt, signInDto.Password); !err.IsNil() {
+		if err.ApiError == errx.ErrInvalidCredentials {
+			if err := UpdateRetries(userCredentials.Retries, userCredentials.UserID); !err.IsNil() {
+				return nil, err
+			}
+		}
 		return nil, err
 	}
 
-	userMeta, err := repository.GetUserMeta(credentails.UserID)
+	userMeta, err := repository.GetUserMeta(userCredentials.UserID)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
@@ -103,7 +108,7 @@ func ResetPasswordUser(resetDto *dto.ResetPasswordUser, c *gin.Context) errx.Err
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err := ValidateEmailPassword(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
+	if err := ValidateCredentials(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
 		return err
 	}
 

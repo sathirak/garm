@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/sathirak/garm/internal/db"
-	"github.com/sathirak/garm/models/dto"
+	"github.com/sathirak/garm/models"
 )
 
 func CreateEmailPassword(userID string, salt string, hash string) error {
@@ -21,26 +21,35 @@ func UpdateEmailPassword(userID string, salt string, hash string) error {
 	return err
 }
 
-func GetUserCredentials(email string) (*dto.UserCredentials, error) {
+func GetUserCredentials(email string) (*models.UserCredentials, error) {
 	conn := db.Get()
 
-	var credentials dto.UserCredentials
+	var userCredentials models.UserCredentials
 
 	err := conn.QueryRow(`
-		SELECT uc.user_id, uc.salt, uc.hash, uc.created_at, uc.updated_at
+		SELECT uc.user_id, uc.salt, uc.hash, uc.retries
 		FROM user_credential uc
 		JOIN "user" u ON uc.user_id = u.id
 		WHERE u.email = $1;`, email).Scan(
-		&credentials.UserID,
-		&credentials.Salt,
-		&credentials.Hash,
-		&credentials.CreatedAt,
-		&credentials.UpdatedAt,
+		&userCredentials.UserID,
+		&userCredentials.Salt,
+		&userCredentials.Hash,
+    &userCredentials.Retries,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &credentials, nil
+	return &userCredentials, nil
+}
+
+func UpdateRetries(retries int, userId string) error {
+
+  conn := db.Get()
+
+  _, err := conn.Query("UPDATE user_credential SET retries = $1 WHERE user_id = $2;", retries, userId)
+
+  return err
+
 }
