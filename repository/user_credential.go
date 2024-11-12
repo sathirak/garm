@@ -6,9 +6,13 @@ import (
 )
 
 func CreateEmailPassword(userID string, salt string, hash string) error {
-	conn := db.Get()
 
-	_, err := conn.Query("INSERT INTO user_credential (user_id, salt, hash) VALUES ($1, $2, $3);", userID, salt, hash)
+	userCredential := &models.UserCredentialDB{
+		UserID: userID,
+		Salt:   salt,
+		Hash:   hash,
+	}
+	err := db.GetGorm().Create(&userCredential).Error
 
 	return err
 }
@@ -21,10 +25,10 @@ func UpdateEmailPassword(userID string, salt string, hash string) error {
 	return err
 }
 
-func GetUserCredentials(email string) (*models.UserCredentials, error) {
+func GetUserCredentials(email string) (*models.UserCredential, error) {
 	conn := db.Get()
 
-	var userCredentials models.UserCredentials
+	var userCredentials models.UserCredential
 
 	err := conn.QueryRow(`
 		SELECT uc.user_id, uc.salt, uc.hash, uc.retries
@@ -34,7 +38,7 @@ func GetUserCredentials(email string) (*models.UserCredentials, error) {
 		&userCredentials.UserID,
 		&userCredentials.Salt,
 		&userCredentials.Hash,
-    &userCredentials.Retries,
+		&userCredentials.Retries,
 	)
 
 	if err != nil {
@@ -46,10 +50,10 @@ func GetUserCredentials(email string) (*models.UserCredentials, error) {
 
 func UpdateRetries(retries int, userId string) error {
 
-  conn := db.Get()
+	conn := db.Get()
 
-  _, err := conn.Query("UPDATE user_credential SET retries = $1 WHERE user_id = $2;", retries, userId)
+	_, err := conn.Query("UPDATE user_credential SET retries = $1 WHERE user_id = $2;", retries, userId)
 
-  return err
+	return err
 
 }

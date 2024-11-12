@@ -8,7 +8,7 @@ import (
 	"github.com/sathirak/garm/repository"
 )
 
-func CreateUser(userInit *dto.UserInit) (*models.UserMeta, error) {
+func CreateUser(userInit *dto.UserInit, salt string, hash string) (*models.User, error) {
 
 	user := dto.UserCreate{
 		VerifiedEmail: false,
@@ -17,7 +17,7 @@ func CreateUser(userInit *dto.UserInit) (*models.UserMeta, error) {
 		UserInit:      *userInit,
 	}
 
-	userMeta, err := repository.CreateUser(&user)
+	userMeta, err := repository.CreateUser(&user, salt, hash)
 
 	if err != nil {
 		return userMeta, err

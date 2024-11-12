@@ -10,7 +10,7 @@ import (
 	"github.com/sathirak/garm/repository"
 )
 
-func SignUpUser(signUpDto *dto.SignUpUser) (*models.UserMeta, errx.Errx) {
+func SignUpUser(signUpDto *dto.SignUpUser) (*models.User, errx.Errx) {
 
 	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
 		return nil, err
@@ -41,20 +41,16 @@ func SignUpUser(signUpDto *dto.SignUpUser) (*models.UserMeta, errx.Errx) {
 		Locale:      signUpDto.Locale,
 		ContactNo:   signUpDto.ContactNo,
 		CountryCode: signUpDto.CountryCode,
-	})
+	}, salt, hash)
 
 	if err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
-	}
-
-	if err = repository.CreateEmailPassword(userMeta.ID, salt, hash); err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
 	return userMeta, errx.Nil()
 }
 
-func SignInUser(signInDto *dto.SignInUser) (*models.UserMeta, errx.Errx) {
+func SignInUser(signInDto *dto.SignInUser) (*models.User, errx.Errx) {
 
 	if err := validator.ValidateSignIn(signInDto); !err.IsNil() {
 		return nil, err
