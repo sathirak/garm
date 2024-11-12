@@ -1,94 +1,99 @@
 package repository
 
 import (
-	"database/sql"
+	"errors"
 
 	"github.com/sathirak/garm/internal/db"
 	"github.com/sathirak/garm/models"
+	"github.com/sathirak/garm/models/dto"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func IsEmailAvailable(email string) (bool, error) {
-	// If email is not in table returns true
-	conn := db.Get()
+	err := db.Get().First(&models.UserDB{}, "email = ?", email).Error
 
-	var existingEmail string
-
-	err := conn.QueryRow(
-		`SELECT "email" FROM "user" WHERE "email" = $1;`,
-		email).Scan(&existingEmail)
-
-	if err == sql.ErrNoRows {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return true, nil
-	}
-
-	if err != nil {
+	} else if err != nil {
 		return false, err
 	}
 
-	// If there's an error (other than no rows) or if an email is found, it's not available
 	return false, nil
 }
 
 func IsIDAvailable(id string) (bool, error) {
-	// If ID is not in table returns true
-	conn := db.Get()
+	err := db.Get().First(&models.UserDB{}, "id = ?", id).Error
 
-	var existingID string
-
-	err := conn.QueryRow(
-		`SELECT id FROM "user" WHERE id = $1;`,
-		id).Scan(&existingID)
-
-	if err == sql.ErrNoRows {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return true, nil
-	}
-
-	if err != nil {
+	} else if err != nil {
 		return false, err
 	}
 
-	// If there's an error (other than no rows) or if an id is found, it's not available
 	return false, nil
 }
 
-func CreateUser(user *models.UserMeta) error {
-	conn := db.Get()
-
-	row := conn.QueryRow(
-		`INSERT INTO "user" (id, first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-     RETURNING id, first_name, last_name, email, is_email_verified, locale, contact_no, country_code, created_at, updated_at;`,
-		user.ID, user.FirstName, user.LastName, user.Email, user.VerifiedEmail, user.Locale, user.ContactNo, user.CountryCode, user.CreatedAt, user.UpdatedAt)
-
-	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.VerifiedEmail, &user.Locale, &user.ContactNo, &user.CountryCode, &user.CreatedAt, &user.UpdatedAt)
-
-	if err != nil {
-		return err
+func GetUserMeta(id string) (*models.User, error) {
+	var user models.UserDB
+	if err := db.Get().First(&user, "id = ?", id).Error; err != nil {
+		return nil, err
 	}
-
-	return nil
+	return &models.User{
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Email:         user.Email,
+		Locale:        user.Locale,
+		ContactNo:     user.ContactNo,
+		CountryCode:   user.CountryCode,
+		ID:            user.ID,
+		VerifiedEmail: user.VerifiedEmail,
+	}, nil
 }
 
-func GetUserMeta(id string) (*models.UserMeta, error) {
+func CreateUser(user *dto.UserCreate, salt string, hash string) (*models.User, error) {
 	conn := db.Get()
 
-	var user models.UserMeta
+	userGorm := models.UserDB{
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Email:         user.Email,
+		Locale:        user.Locale,
+		ContactNo:     user.ContactNo,
+		CountryCode:   user.CountryCode,
+		VerifiedEmail: user.VerifiedEmail,
+	}
 
-	err := conn.QueryRow(`
-		SELECT first_name, last_name, email, locale, id, is_email_verified, created_at, updated_at FROM "user" WHERE id = $1;`, id).Scan(
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Locale,
-		&user.ID,
-		&user.VerifiedEmail,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
+	err := conn.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Omit("id", "is_email_verified", "status", "is_deleted", "created_at", "updated_at").Clauses(clause.Returning{}).Create(&userGorm).Error; err != nil {
+			return err
+		}
+
+		userCredential := &models.UserCredentialDB{
+			UserID: userGorm.ID,
+			Salt:   salt,
+			Hash:   hash,
+		}
+
+		if err := tx.Create(userCredential).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return &models.User{
+		FirstName:     userGorm.FirstName,
+		LastName:      userGorm.LastName,
+		Email:         userGorm.Email,
+		Locale:        userGorm.Locale,
+		ContactNo:     userGorm.ContactNo,
+		CountryCode:   userGorm.CountryCode,
+		ID:            userGorm.ID,
+		VerifiedEmail: userGorm.VerifiedEmail,
+	}, nil
 }

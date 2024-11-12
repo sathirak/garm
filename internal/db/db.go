@@ -7,17 +7,24 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/sathirak/garm/internal/config"
 	"github.com/sathirak/garm/pkg/logger"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var db *sql.DB
+var gormDB *gorm.DB
 
-func Get() *sql.DB {
+func Get() *gorm.DB {
+	return gormDB.Session(&gorm.Session{PrepareStmt: false})
+}
+
+func GetRaw() *sql.DB {
 	return db
 }
 
 func Close() {
 	log := logger.Get()
-
+	gormDB.Exec("DEALLOCATE ALL")
 	err := db.Close()
 
 	if err != nil {
@@ -39,13 +46,15 @@ func Initialize() {
 
 	var err error
 
-	db, err = sql.Open("postgres", psqlInfo)
+	gormDB, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{PrepareStmt: true})
 
 	if err != nil {
 		log.Errorw("startup", "package", "db", "error", err.Error())
 	}
 
-	err = db.Ping()
+	db, err = gormDB.DB()
+
+	gormDB.Exec("DEALLOCATE ALL")
 
 	if err != nil {
 		log.Errorw("startup", "package", "db", "error", err.Error())

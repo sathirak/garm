@@ -10,17 +10,17 @@ import (
 	"github.com/sathirak/garm/models"
 )
 
-func Authenticate(c *gin.Context, userId *models.UserId) (err errx.Errx) {
-
+func Authenticate(c *gin.Context) (*models.UserAuthenticate, errx.Errx) {
+	var userAuthenticate models.UserAuthenticate
 	token, err := jwt.Get(c)
 
 	if !err.IsNil() {
-		return errx.NewError(err, errx.ErrInvalidToken)
+		return nil, err
 	}
 
 	if token.ExpiredAt.Before(time.Now()) {
 		jwt.Delete(c)
-		return errx.NewError(err, errx.ErrInvalidToken)
+		return nil, errx.NewError(err, errx.ErrInvalidToken)
 	}
 
 	if time.Until(token.ExpiredAt) < (config.Get().App.JWTExpTime - time.Hour*24) {
@@ -28,9 +28,9 @@ func Authenticate(c *gin.Context, userId *models.UserId) (err errx.Errx) {
 		err = jwt.Set(c, token.ID)
 
 		if !err.IsNil() {
-			return errx.NewError(err, errx.ErrInvalidToken)
+			return nil, errx.NewError(err, errx.ErrInvalidToken)
 		}
 	}
-	userId.ID = token.ID
-	return errx.Nil()
+	userAuthenticate.ID = token.ID
+	return &userAuthenticate, errx.Nil()
 }

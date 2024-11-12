@@ -8,20 +8,23 @@ import (
 
 func SetupRoutes(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
-	auth := v1.Group("/auth")
+
 	{
+		auth := v1.Group("/auth")
+
 		// Public routes
 		auth.GET("/healthz", controllers.Healthz)
-		auth.POST("/email-password/password-check", controllers.PasswordCheck)
 
-		auth.POST("/email-password/sign-up", controllers.SignUpEmailPassword)
-		auth.POST("/email-password/sign-in", controllers.SignInEmailPassword)
+		user := auth.Group("/user")
+		user.POST("/password-check", controllers.CheckPasswordUser)
+		user.POST("/sign-up", controllers.SignUpUser)
+		user.POST("/sign-in", controllers.SignInUser)
 
-		auth.POST("/email-password/reset/:userID", controllers.ResetEmailPassword)
+		user.POST("/reset", controllers.ResetPasswordUser)
 
 		// Private routes
 		service := auth.Group("/service")
 		service.Use(middlewares.ApiKeyAuth())
-		service.GET("/", controllers.Authenticate)
+		service.GET("/", controllers.AuthenticateUser)
 	}
 }

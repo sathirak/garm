@@ -9,15 +9,15 @@ import (
 	"github.com/sathirak/garm/services"
 )
 
-func SignUpEmailPassword(c *gin.Context) {
-	var signUpDto dto.SignUpEmailPassword
+func SignUpUser(c *gin.Context) {
+	var signUpDTO dto.SignUpUser
 
-	if err := c.ShouldBindJSON(&signUpDto); err != nil {
+	if err := c.ShouldBindJSON(&signUpDTO); err != nil {
 		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
 		return
 	}
 
-	user, err := services.SignUpEmailPassword(&signUpDto)
+	user, err := services.SignUpUser(&signUpDTO)
 
 	if !err.IsNil() {
 		handlers.Errorx(c, err)
@@ -32,15 +32,15 @@ func SignUpEmailPassword(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user)
 }
 
-func SignInEmailPassword(c *gin.Context) {
-	var signInDto dto.SignInEmailPassword
+func SignInUser(c *gin.Context) {
+	var signInDTO dto.SignInUser
 
-	if err := c.ShouldBindJSON(&signInDto); err != nil {
+	if err := c.ShouldBindJSON(&signInDTO); err != nil {
 		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
 		return
 	}
 
-	user, err := services.SignInEmailPassword(&signInDto)
+	user, err := services.SignInUser(&signInDTO)
 
 	if !err.IsNil() {
 		handlers.Errorx(c, err)
@@ -55,17 +55,15 @@ func SignInEmailPassword(c *gin.Context) {
 	handlers.SuccessWithDataResponse(c, user)
 }
 
-func ResetEmailPassword(c *gin.Context) {
-	var resetPasswordDto dto.ResetEmailCredentials
+func ResetPasswordUser(c *gin.Context) {
+	var resetPasswordDTO dto.ResetPasswordUser
 
-	userID := c.Param("userID")
-
-	if err := c.ShouldBindJSON(&resetPasswordDto); err != nil {
+	if err := c.ShouldBindJSON(&resetPasswordDTO); err != nil {
 		handlers.Errorx(c, errx.NewError(err, errx.ErrUnprocessableContent))
 		return
 	}
 
-	if err := services.ResetEmailPassword(&resetPasswordDto, userID); !err.IsNil() {
+	if err := services.ResetPasswordUser(&resetPasswordDTO, c); !err.IsNil() {
 		handlers.Errorx(c, err)
 		return
 	}

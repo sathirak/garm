@@ -16,7 +16,6 @@ run: build
 
 dev:
 	@clear
-	@swag init
 	@staticcheck .
 	@goimports -w .
 	@go vet .

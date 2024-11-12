@@ -1,14 +1,16 @@
 package services
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/sathirak/garm/internal/errx"
+	"github.com/sathirak/garm/internal/jwt"
 	"github.com/sathirak/garm/internal/validator"
 	"github.com/sathirak/garm/models"
 	"github.com/sathirak/garm/models/dto"
 	"github.com/sathirak/garm/repository"
 )
 
-func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, errx.Errx) {
+func SignUpUser(signUpDto *dto.SignUpUser) (*models.User, errx.Errx) {
 
 	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
 		return nil, err
@@ -27,32 +29,28 @@ func SignUpEmailPassword(signUpDto *dto.SignUpEmailPassword) (*models.UserMeta, 
 		return nil, errx.NewError(err, errx.ErrPasswordInvalid)
 	}
 
-	user, err := CreateUser(&dto.UserInit{
+	hash, salt, err := GenerateHashSalt(signUpDto.Password)
+	if err != nil {
+		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	}
+
+	userMeta, err := CreateUser(&dto.UserInit{
 		FirstName:   signUpDto.FirstName,
 		LastName:    signUpDto.LastName,
 		Email:       signUpDto.Email,
 		Locale:      signUpDto.Locale,
 		ContactNo:   signUpDto.ContactNo,
 		CountryCode: signUpDto.CountryCode,
-	})
+	}, salt, hash)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	hash, salt, err := GenerateHashSalt(signUpDto.Password)
-	if err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
-	}
-
-	if err = repository.CreateEmailPassword(user.ID, salt, hash); err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
-	}
-
-	return user, errx.Nil()
+	return userMeta, errx.Nil()
 }
 
-func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, errx.Errx) {
+func SignInUser(signInDto *dto.SignInUser) (*models.User, errx.Errx) {
 
 	if err := validator.ValidateSignIn(signInDto); !err.IsNil() {
 		return nil, err
@@ -66,17 +64,22 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, 
 		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
 	}
 
-	credentails, err := repository.GetCredentialsEmailPassword(signInDto.Email)
+	userCredentials, err := repository.GetUserCredentials(signInDto.Email)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err := ValidateEmailPassword(credentails.Hash, credentails.Salt, signInDto.Password); !err.IsNil() {
+	if err := ValidateCredentials(userCredentials.Hash, userCredentials.Salt, signInDto.Password); !err.IsNil() {
+		if err.ApiError == errx.ErrInvalidCredentials {
+			if err := UpdateRetries(userCredentials.Retries, userCredentials.UserID); !err.IsNil() {
+				return nil, err
+			}
+		}
 		return nil, err
 	}
 
-	userMeta, err := repository.GetUserMeta(credentails.UserID)
+	userMeta, err := repository.GetUserMeta(userCredentials.UserID)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
@@ -85,41 +88,32 @@ func SignInEmailPassword(signInDto *dto.SignInEmailPassword) (*models.UserMeta, 
 	return userMeta, errx.Nil()
 }
 
-func ResetEmailPassword(resetDto *dto.ResetEmailCredentials, userID string) errx.Errx {
+func ResetPasswordUser(resetDto *dto.ResetPasswordUser, c *gin.Context) errx.Errx {
+
+	if _, err := jwt.Get(c); !err.IsNil() {
+		return err
+	}
 
 	if err := validator.ValidatePassword(resetDto.NewPassword); err != nil {
 		return errx.NewError(err, errx.ErrPasswordInvalid)
 	}
 
-	IsAvailable, err := repository.IsIDAvailable(userID)
-	if err != nil {
-		return errx.NewError(err, errx.ErrEmailUnavailable)
-	}
-
-	if IsAvailable {
-		return errx.NewError(nil, errx.ErrEmailUnavailable)
-	}
-
-	credentails, err := repository.GetCredentialsEmailPassword(resetDto.Email)
+	credentails, err := repository.GetUserCredentials(resetDto.Email)
 
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if credentails.UserID != userID {
-		return errx.NewError(err, errx.ErrUnprocessableContent)
-	}
-
-	if err := ValidateEmailPassword(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
+	if err := ValidateCredentials(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
 		return err
 	}
 
-	hash, salt, err := GenerateHashSalt(resetDto.NewPassword)
+	credentails.Hash, credentails.Salt, err = GenerateHashSalt(resetDto.NewPassword)
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err = repository.UpdateEmailPassword(userID, salt, hash); err != nil {
+	if err = repository.UpdateEmailPassword(credentails); err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
