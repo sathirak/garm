@@ -2,9 +2,9 @@ package validator
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/sathirak/garm/internal/errx"
-	"github.com/sathirak/garm/models/dto"
-	"github.com/sathirak/garm/pkg/logger"
+	"github.com/hotelbear/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/logger"
+	"github.com/hotelbear/garm/models/dto"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 

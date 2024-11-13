@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/sathirak/garm/internal/config"
-	"github.com/sathirak/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/config"
+	"github.com/hotelbear/garm/internal/errx"
 )
 
 type JWT struct {

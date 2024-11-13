@@ -7,12 +7,12 @@ import (
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/internal/config"
-	"github.com/sathirak/garm/internal/db"
-	"github.com/sathirak/garm/internal/jwt"
-	"github.com/sathirak/garm/middlewares"
-	"github.com/sathirak/garm/pkg/logger"
-	"github.com/sathirak/garm/routes"
+	"github.com/hotelbear/garm/internal/config"
+	"github.com/hotelbear/garm/internal/db"
+	"github.com/hotelbear/garm/internal/jwt"
+	"github.com/hotelbear/garm/internal/logger"
+	"github.com/hotelbear/garm/middlewares"
+	"github.com/hotelbear/garm/routes"
 )
 
 func main() {

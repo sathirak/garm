@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/sathirak/garm/internal/db"
-	"github.com/sathirak/garm/models"
+	"github.com/hotelbear/garm/internal/db"
+	"github.com/hotelbear/garm/models"
 )
 
 func CreateEmailPassword(userID string, salt string, hash string) error {

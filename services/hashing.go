@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 
-	"github.com/sathirak/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/errx"
 	"golang.org/x/crypto/argon2"
 )
 

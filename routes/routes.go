@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/controllers"
-	"github.com/sathirak/garm/middlewares"
+	"github.com/hotelbear/garm/controllers"
+	"github.com/hotelbear/garm/middlewares"
 )
 
 func SetupRoutes(r *gin.Engine) {

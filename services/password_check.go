@@ -3,8 +3,8 @@ package services
 import (
 	"math"
 
-	"github.com/sathirak/garm/internal/validator"
-	"github.com/sathirak/garm/models"
+	"github.com/hotelbear/garm/internal/validator"
+	"github.com/hotelbear/garm/models"
 )
 
 func PasswordCheck(password string) models.PasswordCheck {

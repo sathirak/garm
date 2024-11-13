@@ -2,9 +2,9 @@ package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/handlers"
-	"github.com/sathirak/garm/internal/config"
-	"github.com/sathirak/garm/internal/errx"
+	"github.com/hotelbear/garm/handlers"
+	"github.com/hotelbear/garm/internal/config"
+	"github.com/hotelbear/garm/internal/errx"
 )
 
 func ApiKeyAuth() gin.HandlerFunc {

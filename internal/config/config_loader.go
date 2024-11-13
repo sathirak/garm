@@ -3,8 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/hotelbear/garm/internal/logger"
 	"github.com/joho/godotenv"
-	"github.com/sathirak/garm/pkg/logger"
 	"github.com/spf13/viper"
 )
 

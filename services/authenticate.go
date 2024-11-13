@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/internal/config"
-	"github.com/sathirak/garm/internal/errx"
-	"github.com/sathirak/garm/internal/jwt"
-	"github.com/sathirak/garm/models"
+	"github.com/hotelbear/garm/internal/config"
+	"github.com/hotelbear/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/jwt"
+	"github.com/hotelbear/garm/models"
 )
 
 func Authenticate(c *gin.Context) (*models.UserAuthenticate, errx.Errx) {

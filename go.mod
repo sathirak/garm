@@ -1,4 +1,4 @@
-module github.com/sathirak/garm
+module github.com/hotelbear/garm
 
 go 1.23.0
 

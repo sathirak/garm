@@ -4,7 +4,7 @@ import (
 	"encoding/pem"
 	"os"
 
-	"github.com/sathirak/garm/pkg/logger"
+	"github.com/hotelbear/garm/internal/logger"
 )
 
 var key []byte

@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/internal/errx"
-	"github.com/sathirak/garm/pkg/logger"
+	"github.com/hotelbear/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/logger"
 )
 
 type Response struct {

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/sathirak/garm/internal/errx"
-	"github.com/sathirak/garm/repository"
+	"github.com/hotelbear/garm/internal/errx"
+	"github.com/hotelbear/garm/repository"
 )
 
 func UpdateRetries(retries int, userId string) errx.Errx {

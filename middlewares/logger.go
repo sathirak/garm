@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/pkg/logger"
+	"github.com/hotelbear/garm/internal/logger"
 )
 
 func Logger() gin.HandlerFunc {

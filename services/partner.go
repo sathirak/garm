@@ -2,12 +2,12 @@ package services
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/internal/errx"
-	"github.com/sathirak/garm/internal/jwt"
-	"github.com/sathirak/garm/internal/validator"
-	"github.com/sathirak/garm/models"
-	"github.com/sathirak/garm/models/dto"
-	"github.com/sathirak/garm/repository"
+	"github.com/hotelbear/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/jwt"
+	"github.com/hotelbear/garm/internal/validator"
+	"github.com/hotelbear/garm/models"
+	"github.com/hotelbear/garm/models/dto"
+	"github.com/hotelbear/garm/repository"
 )
 
 func SignUpUser(signUpDto *dto.SignUpUser) (*models.User, errx.Errx) {

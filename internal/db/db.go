@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/hotelbear/garm/internal/config"
+	"github.com/hotelbear/garm/internal/logger"
 	_ "github.com/lib/pq"
-	"github.com/sathirak/garm/internal/config"
-	"github.com/sathirak/garm/pkg/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

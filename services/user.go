@@ -3,9 +3,9 @@ package services
 import (
 	"time"
 
-	"github.com/sathirak/garm/models"
-	"github.com/sathirak/garm/models/dto"
-	"github.com/sathirak/garm/repository"
+	"github.com/hotelbear/garm/models"
+	"github.com/hotelbear/garm/models/dto"
+	"github.com/hotelbear/garm/repository"
 )
 
 func CreateUser(userInit *dto.UserInit, salt string, hash string) (*models.User, error) {

@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sathirak/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/errx"
 )
 
 func Set(c *gin.Context, userId string) errx.Errx {
