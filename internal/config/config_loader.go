@@ -55,9 +55,8 @@ func Initialize() {
 func ensureRequiredEnvsAreAvailable() error {
 	log := logger.Get()
 
-	if err := godotenv.Load(); err != nil {
-		return err
-	}
+	// Load .env file if it exists, but don't error if it doesn't
+	_ = godotenv.Load()
 
 	viper.AutomaticEnv()
 

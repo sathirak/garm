@@ -31,6 +31,7 @@ func main() {
 	r := gin.New()
 
 	r.Use(requestid.New())
+	r.Use(middlewares.Cors())
 	r.Use(middlewares.Logger())
 	routes.SetupRoutes(r)
 

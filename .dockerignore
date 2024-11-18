@@ -1,0 +1,6 @@
+.editorconfig
+.env
+.env.example
+.gitignore
+quodana.yaml
+README.md
