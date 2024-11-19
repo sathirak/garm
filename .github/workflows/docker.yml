@@ -1,0 +1,21 @@
+name: Docker
+
+on:
+  push:
+    branches: ["main"]
+
+  pull_request:
+    branches: ["main"]
+
+env:
+  DOCKER_IMAGE_NAME: garm
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile --tag $DOCKER_IMAGE_NAME:latest

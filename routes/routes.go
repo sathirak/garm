@@ -6,7 +6,7 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	authV1 := r.Group("/v1")
+	authV1 := r.Group("/api/v1")
 
 	{
 		// declare: public routes
