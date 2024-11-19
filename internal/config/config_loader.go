@@ -11,6 +11,7 @@ import (
 var config Config
 
 var requiredEnvs = [...]string{
+	"API_VERSION",
 	"ENV",
 	"PORT",
 	"X_API_TOKEN",
@@ -35,6 +36,7 @@ func Initialize() {
 
 	config = Config{
 		App: AppConfig{
+			ApiVersion: getEnv("API_VERSION"),
 			Env:        getEnv("ENV", "development"),
 			Port:       getEnv("PORT", "8080"),
 			ApiToken:   getEnv("X_API_TOKEN", ""),

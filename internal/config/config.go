@@ -11,6 +11,7 @@ type DatabaseConfig struct {
 }
 
 type AppConfig struct {
+	ApiVersion string
 	Port       string
 	ApiToken   string
 	Env        string

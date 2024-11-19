@@ -6,5 +6,6 @@ import (
 )
 
 func Healthz(c *gin.Context) {
-	handlers.SuccessResponse(c)
+	handlers.SuccessWithDataResponse(c, gin.H{"version": "01"})
+
 }
