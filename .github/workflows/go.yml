@@ -60,7 +60,7 @@ jobs:
         # make lint below will handle actually running the linter.
         args: --help
 
-    - run: make lint
+    - run: make lint-ci
       name: Lint
 
     - uses: golang/govulncheck-action@v1

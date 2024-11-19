@@ -46,10 +46,11 @@ tidy:
 .PHONY: tidy-lint
 tidy-lint:
 	@$(foreach mod,$(MODULE_DIRS), \
-		(cd $(mod) && \
-		echo "[lint] tidy: $(mod)" && \
-		go mod tidy && \
-		git diff --exit-code -- go.mod go.sum) &&) true
+	(cd $(mod) && \
+	echo "[lint] tidy: $(mod)" && \
+	go mod tidy && \
+	git diff --exit-code -- go.mod go.sum)) || true
+
 
 .PHONY: govulncheck
 vulncheck:
