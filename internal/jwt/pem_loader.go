@@ -1,8 +1,8 @@
 package jwt
 
 import (
+	_ "embed"
 	"encoding/pem"
-	"os"
 
 	"github.com/hotelbear/garm/internal/logger"
 )
@@ -16,14 +16,8 @@ func GetKey() []byte {
 	return key
 }
 
-func Initialize() {
+func Initialize(pemData []byte) {
 	log := logger.Get()
-	file := "garm.pem"
-
-	pemData, err := os.ReadFile(file)
-	if err != nil {
-		log.Errorw("startup", "package", "jwt", "error", err.Error())
-	}
 
 	block, _ := pem.Decode(pemData)
 	if block == nil {

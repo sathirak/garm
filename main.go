@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,11 +16,14 @@ import (
 	"github.com/hotelbear/garm/routes"
 )
 
+//go:embed garm.pem
+var PemData []byte
+
 func main() {
 	logger.Initialize()
 	config.Initialize()
 	db.Initialize()
-	jwt.Initialize()
+	jwt.Initialize(PemData)
 
 	log := logger.Get()
 	cfg := config.Get()

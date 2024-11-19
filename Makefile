@@ -22,6 +22,14 @@ dev:
 	@go build -o bin/$(SERVICE) .
 	@./bin/$(SERVICE)
 
+check:
+	@clear
+	@govulncheck
+	@make lint-ci
+	@staticcheck .
+	@goimports -w .
+	@go vet .
+
 .PHONY: lint-ci
 lint-ci: golangci-lint tidy-lint
 
