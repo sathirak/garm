@@ -33,3 +33,8 @@ type UserTable struct {
 func (UserTable) TableName() string {
 	return "user"
 }
+
+type UserWithCredentials struct {
+	UserTable
+	Credential UserCredentialTable `gorm:"foreignKey:UserID;references:ID"`
+}

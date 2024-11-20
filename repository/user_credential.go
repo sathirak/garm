@@ -5,48 +5,23 @@ import (
 	"github.com/hotelbear/garm/models"
 )
 
-func CreateEmailPassword(userID string, salt string, hash string) error {
-	userCredential := &models.UserCredentialTable{
-		UserID: userID,
-		Salt:   salt,
-		Hash:   hash,
-	}
-	err := db.Get().Create(&userCredential).Error
+func UpdateEmailPassword(userCredentials *models.UserCredentialTable) error {
+
+	err := db.Get().Model(userCredentials).Updates(models.UserCredentialTable{Hash: userCredentials.Hash, Salt: userCredentials.Salt}).Error
 
 	return err
 }
 
-func UpdateEmailPassword(userCredentials *models.UserCredentialRes) error {
+func GetUserCredential(email string) (*models.UserWithCredentials, error) {
+	var user models.UserWithCredentials
 
-	userCredentialDB := &models.UserCredentialTable{
-		UserID: userCredentials.UserID,
-		Salt:   userCredentials.Salt,
-		Hash:   userCredentials.Hash,
-	}
-
-	err := db.Get().Model(userCredentialDB).Updates(models.UserCredentialTable{Hash: userCredentials.Hash, Salt: userCredentials.Salt}).Error
-
-	return err
-}
-
-func GetUserCredentials(email string) (*models.UserCredentialRes, error) {
-	var userCredential models.UserCredentialTable
-
-	err := db.Get().
-		Joins("JOIN \"user\" ON user_credential.user_id = \"user\".id").
-		Where("\"user\".email = ?", email).
-		First(&userCredential).Error
+	err := db.Get().Preload("Credential").First(&user, "email = ?", email).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &models.UserCredentialRes{
-		UserID:  userCredential.UserID,
-		Salt:    userCredential.Salt,
-		Hash:    userCredential.Hash,
-		Retries: userCredential.Retries,
-	}, nil
+	return &user, nil
 }
 
 func UpdateRetries(retries int, userId string) error {

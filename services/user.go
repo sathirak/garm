@@ -8,6 +8,7 @@ import (
 	"github.com/hotelbear/garm/internal/validator"
 	"github.com/hotelbear/garm/models"
 	"github.com/hotelbear/garm/repository"
+	"github.com/mitchellh/mapstructure"
 )
 
 func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
@@ -34,17 +35,20 @@ func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	user := models.UserTable{
-		FirstName:   signUpDto.FirstName,
-		LastName:    signUpDto.LastName,
-		Email:       signUpDto.Email,
-		Locale:      signUpDto.Locale,
-		ContactNo:   signUpDto.ContactNo,
-		CountryCode: signUpDto.CountryCode,
-		Status:      "active",
+	user := &models.UserTable{}
+	if err := mapstructure.Decode(signUpDto, user); err != nil {
+		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	userMeta, err := repository.CreateUser(&user, salt, hash)
+	userCredential := &models.UserCredentialTable{
+		UserID: user.ID,
+		Salt:   salt,
+		Hash:   hash,
+	}
+
+	user.Status = "active"
+
+	userMeta, err := repository.CreateUser(user, userCredential)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
@@ -67,28 +71,27 @@ func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
 		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
 	}
 
-	userCredentials, err := repository.GetUserCredentials(signInDto.Email)
+	userWithCredentials, err := repository.GetUserCredential(signInDto.Email)
 
 	if err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err := hashing.ValidateCredentials(userCredentials.Hash, userCredentials.Salt, signInDto.Password); !err.IsNil() {
+	if err := hashing.ValidateCredentials(userWithCredentials.Credential.Hash, userWithCredentials.Credential.Salt, signInDto.Password); !err.IsNil() {
 		if err.ApiError == errx.ErrInvalidCredentials {
-			if err := UpdateRetries(userCredentials.Retries, userCredentials.UserID); !err.IsNil() {
+			if err := UpdateRetries(userWithCredentials.Credential.Retries, userWithCredentials.ID); !err.IsNil() {
 				return nil, err
 			}
 		}
 		return nil, err
 	}
 
-	userMeta, err := repository.GetUserMeta(userCredentials.UserID)
-
-	if err != nil {
+	userRes := &models.UserRes{}
+	if err := mapstructure.Decode(userWithCredentials, userRes); err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	return userMeta, errx.Nil()
+	return userRes, errx.Nil()
 }
 
 func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) errx.Errx {
@@ -101,22 +104,22 @@ func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) er
 		return errx.NewError(err, errx.ErrPasswordInvalid)
 	}
 
-	credentails, err := repository.GetUserCredentials(resetDto.Email)
+	userWithCredential, err := repository.GetUserCredential(resetDto.Email)
 
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err := hashing.ValidateCredentials(credentails.Hash, credentails.Salt, resetDto.OldPassword); !err.IsNil() {
+	if err := hashing.ValidateCredentials(userWithCredential.Credential.Hash, userWithCredential.Credential.Salt, resetDto.OldPassword); !err.IsNil() {
 		return err
 	}
 
-	credentails.Hash, credentails.Salt, err = hashing.GenerateHashSalt(resetDto.NewPassword)
+	userWithCredential.Credential.Hash, userWithCredential.Credential.Salt, err = hashing.GenerateHashSalt(resetDto.NewPassword)
 	if err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	if err = repository.UpdateEmailPassword(credentails); err != nil {
+	if err = repository.UpdateEmailPassword(&userWithCredential.Credential); err != nil {
 		return errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
