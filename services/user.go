@@ -1,27 +1,126 @@
 package services
 
 import (
-	"time"
-
+	"github.com/gin-gonic/gin"
+	"github.com/hotelbear/garm/internal/errx"
+	"github.com/hotelbear/garm/internal/hashing"
+	"github.com/hotelbear/garm/internal/jwt"
+	"github.com/hotelbear/garm/internal/validator"
 	"github.com/hotelbear/garm/models"
-	"github.com/hotelbear/garm/models/dto"
 	"github.com/hotelbear/garm/repository"
+	"github.com/mitchellh/mapstructure"
 )
 
-func CreateUser(userInit *dto.UserInit, salt string, hash string) (*models.User, error) {
+func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 
-	user := dto.UserCreate{
-		VerifiedEmail: false,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
-		UserInit:      *userInit,
+	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
+		return nil, err
 	}
 
-	userMeta, err := repository.CreateUser(&user, salt, hash)
-
-	if err != nil {
-		return userMeta, err
+	IsAvailable, err := repository.IsEmailAvailable(signUpDto.Email)
+	if !err.IsNil() {
+		return nil, err
 	}
 
-	return userMeta, nil
+	if !IsAvailable {
+		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
+	}
+
+	if err := validator.ValidatePassword(signUpDto.Password); !err.IsNil() {
+		return nil, err
+	}
+
+	hash, salt, err := hashing.GenerateHashSalt(signUpDto.Password)
+	if !err.IsNil() {
+		return nil, err
+	}
+
+	user := &models.UserTable{}
+	if err := mapstructure.Decode(signUpDto, user); err != nil {
+		return nil, errx.NewError(err, errx.ErrInternalServer)
+	}
+
+	userCredential := &models.UserCredentialTable{
+		UserID: user.ID,
+		Salt:   salt,
+		Hash:   hash,
+	}
+
+	user.Status = "active"
+
+	userMeta, err := repository.CreateUser(user, userCredential)
+
+	if !err.IsNil() {
+		return nil, err
+	}
+
+	return userMeta, errx.Nil()
+}
+
+func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
+
+	if err := validator.ValidateSignIn(signInDto); !err.IsNil() {
+		return nil, err
+	}
+	IsAvailable, err := repository.IsEmailAvailable(signInDto.Email)
+	if !err.IsNil() {
+		return nil, err
+	}
+
+	if IsAvailable {
+		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
+	}
+
+	userWithCredentials, err := repository.GetUserCredential(signInDto.Email)
+
+	if !err.IsNil() {
+		return nil, err
+	}
+
+	if err := hashing.ValidateCredentials(userWithCredentials.C.Hash, userWithCredentials.C.Salt, signInDto.Password); !err.IsNil() {
+		if err.ApiError == errx.ErrInvalidCredentials {
+			if err := UpdateRetries(userWithCredentials.C.Retries, userWithCredentials.ID); !err.IsNil() {
+				return nil, err
+			}
+		}
+		return nil, err
+	}
+
+	userRes := &models.UserRes{}
+	if err := mapstructure.Decode(userWithCredentials, userRes); err != nil {
+		return nil, errx.NewError(err, errx.ErrInternalServer)
+	}
+
+	return userRes, errx.Nil()
+}
+
+func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) errx.Errx {
+
+	if _, err := jwt.Get(c); !err.IsNil() {
+		return err
+	}
+
+	if err := validator.ValidatePassword(resetDto.NewPassword); !err.IsNil() {
+		return err
+	}
+
+	userWithCredential, err := repository.GetUserCredential(resetDto.Email)
+
+	if !err.IsNil() {
+		return err
+	}
+
+	if err := hashing.ValidateCredentials(userWithCredential.C.Hash, userWithCredential.C.Salt, resetDto.OldPassword); !err.IsNil() {
+		return err
+	}
+
+	userWithCredential.C.Hash, userWithCredential.C.Salt, err = hashing.GenerateHashSalt(resetDto.NewPassword)
+	if !err.IsNil() {
+		return err
+	}
+	if err = repository.UpdateEmailPassword(&userWithCredential.C); !err.IsNil() {
+		return err
+	}
+
+	return errx.Nil()
 }

@@ -10,8 +10,8 @@ import (
 	"github.com/hotelbear/garm/models"
 )
 
-func Authenticate(c *gin.Context) (*models.UserAuthenticate, errx.Errx) {
-	var userAuthenticate models.UserAuthenticate
+func Authenticate(c *gin.Context) (*models.UserAuthenticateRes, errx.Errx) {
+	var userAuthenticate models.UserAuthenticateRes
 	token, err := jwt.Get(c)
 
 	if !err.IsNil() {

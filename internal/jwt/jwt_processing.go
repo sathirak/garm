@@ -22,7 +22,7 @@ func Generate(id string) (string, errx.Errx) {
 
 	tokenString, err := token.SignedString(GetKey())
 	if err != nil {
-		return "", errx.NewError(err, errx.ErrInternalServerErr)
+		return "", errx.NewError(err, errx.ErrInternalServer)
 	}
 
 	bearerToken := "Bearer " + tokenString

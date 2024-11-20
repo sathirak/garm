@@ -11,18 +11,20 @@ type ApiErrx struct {
 }
 
 var (
-	ErrInternalServerErr    = ApiErrx{errors.New("internal server error"), http.StatusInternalServerError}
-	ErrUnauthenticated      = ApiErrx{errors.New("unauthenticated request"), http.StatusUnauthorized}
-	ErrUnprocessableContent = ApiErrx{errors.New("unprocessable content"), http.StatusUnprocessableEntity}
+	ErrInternalServer = ApiErrx{errors.New("unexpected error occurred"), http.StatusInternalServerError}
 
-	ErrInvalidCredentials = ApiErrx{errors.New("email or password doesn't match"), http.StatusBadRequest}
+	// Database errors
+	ErrDatabase               = ApiErrx{errors.New("database error"), http.StatusInternalServerError}
+	ErrDatabaseRecordNotFound = ApiErrx{errors.New("resource not found"), http.StatusNotFound}
 
-	ErrInvalidBearerHeader = ApiErrx{errors.New("invalid bearer header"), http.StatusBadRequest}
-	ErrInvalidToken        = ApiErrx{errors.New("invalid jwt token"), http.StatusUnauthorized}
-	ErrInvalidTokenClaims  = ApiErrx{errors.New("invalid jwt token claims"), http.StatusUnauthorized}
+	// Authentication errors
+	ErrUnauthenticated            = ApiErrx{errors.New("sign in required"), http.StatusUnauthorized}
+	ErrEmailUnavailable           = ApiErrx{errors.New("email already in use"), http.StatusConflict}
+	ErrMissingOrMalformedApiToken = ApiErrx{errors.New("invalid api token"), http.StatusBadRequest}
+	ErrInvalidCredentials         = ApiErrx{errors.New("invalid email or password"), http.StatusBadRequest}
+	ErrInvalidToken               = ApiErrx{errors.New("session expired"), http.StatusUnauthorized}
 
-	ErrEmailUnavailable           = ApiErrx{errors.New("email unavailable"), http.StatusConflict}
-	ErrPasswordInvalid            = ApiErrx{errors.New("password invalid"), http.StatusBadRequest}
-	ErrInvalidUserData            = ApiErrx{errors.New("invalid user data"), http.StatusBadRequest}
-	ErrMissingOrMalformedApiToken = ApiErrx{errors.New("missing or malformed api token"), http.StatusBadRequest}
+	// Validation errors
+	ErrInvalidBearerHeader  = ApiErrx{errors.New("invalid auth header"), http.StatusBadRequest}
+	ErrUnprocessableContent = ApiErrx{errors.New("invalid input"), http.StatusUnprocessableEntity}
 )

@@ -4,13 +4,13 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/hotelbear/garm/internal/errx"
 	"github.com/hotelbear/garm/internal/logger"
-	"github.com/hotelbear/garm/models/dto"
+	"github.com/hotelbear/garm/models"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
 var Validate *validator.Validate
 
-func ValidateSignUp(signUpDto *dto.SignUpUser) errx.Errx {
+func ValidateSignUp(signUpDto *models.SignUpUserReq) errx.Errx {
 	log := logger.Get()
 	Validate = validator.New(validator.WithRequiredStructEnabled())
 
@@ -22,7 +22,7 @@ func ValidateSignUp(signUpDto *dto.SignUpUser) errx.Errx {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return errx.NewError(err, errx.ErrInternalServerErr)
+			return errx.NewError(err, errx.ErrInternalServer)
 		}
 
 		// from here you can create your own error messages in whatever language you wish
@@ -31,17 +31,23 @@ func ValidateSignUp(signUpDto *dto.SignUpUser) errx.Errx {
 	return errx.Nil()
 }
 
-func ValidatePassword(password string) error {
+func ValidatePassword(password string) errx.Errx {
 
 	const minEntropyBits = 60
-	return passwordvalidator.Validate(password, minEntropyBits)
+	err := passwordvalidator.Validate(password, minEntropyBits)
+
+	if err != nil {
+		return errx.NewError(err, errx.ErrInvalidCredentials)
+	}
+
+	return errx.Nil()
 }
 
 func CheckPasswordEntropy(password string) float64 {
 	return passwordvalidator.GetEntropy(password)
 }
 
-func ValidateSignIn(signInDto *dto.SignInUser) errx.Errx {
+func ValidateSignIn(signInDto *models.SignInUserReq) errx.Errx {
 	log := logger.Get()
 	Validate = validator.New(validator.WithRequiredStructEnabled())
 
@@ -53,7 +59,7 @@ func ValidateSignIn(signInDto *dto.SignInUser) errx.Errx {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return errx.NewError(err, errx.ErrInternalServerErr)
+			return errx.NewError(err, errx.ErrInternalServer)
 		}
 
 		// from here you can create your own error messages in whatever language you wish

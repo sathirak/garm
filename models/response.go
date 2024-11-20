@@ -1,7 +1,6 @@
 package models
 
-// full user scope
-type User struct {
+type UserRes struct {
 	FirstName     string `json:"first_name"`
 	LastName      string `json:"last_name"`
 	ContactNo     string `json:"contact_no"`
@@ -12,17 +11,17 @@ type User struct {
 	VerifiedEmail bool   `json:"verified_email"`
 }
 
-type UserAuthenticate struct {
+type UserAuthenticateRes struct {
 	ID string `json:"id"`
 }
 
-type UserCredential struct {
+type UserCredentialRes struct {
 	UserID  string
 	Salt    string
 	Hash    string
 	Retries int
 }
 
-type PasswordCheck struct {
+type CheckPasswordRes struct {
 	Strength int `json:"strength"`
 }

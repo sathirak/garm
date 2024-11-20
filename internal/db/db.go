@@ -18,10 +18,6 @@ func Get() *gorm.DB {
 	return gormDB.Session(&gorm.Session{PrepareStmt: false})
 }
 
-func GetRaw() *sql.DB {
-	return db
-}
-
 func Close() {
 	log := logger.Get()
 	gormDB.Exec("DEALLOCATE ALL")

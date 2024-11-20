@@ -6,16 +6,18 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	authV1 := r.Group("/api/v1")
+	v1 := r.Group("/api/v1")
 
 	{
-		// declare: public routes
-		authV1.GET("/healthz", controllers.Healthz)
-		authV1.GET("/verify", controllers.AuthenticateUser)
+		v1.GET("/healthz", controllers.Healthz)
+		v1.GET("/verify", controllers.AuthenticateUser)
+	}
 
-		authV1.POST("/user/password-check", controllers.CheckPasswordUser)
-		authV1.POST("/user/sign-up", controllers.SignUpUser)
-		authV1.POST("/user/sign-in", controllers.SignInUser)
-		authV1.POST("/user/reset", controllers.ResetPasswordUser)
+	user := v1.Group("/user")
+	{
+		user.POST("/password-check", controllers.CheckPasswordUser)
+		user.POST("/sign-up", controllers.SignUpUser)
+		user.POST("/sign-in", controllers.SignInUser)
+		user.POST("/reset", controllers.ResetPasswordUser)
 	}
 }
