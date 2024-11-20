@@ -22,9 +22,9 @@ var (
 	ErrEmailUnavailable           = ApiErrx{errors.New("email already in use"), http.StatusConflict}
 	ErrMissingOrMalformedApiToken = ApiErrx{errors.New("invalid api token"), http.StatusBadRequest}
 	ErrInvalidCredentials         = ApiErrx{errors.New("invalid email or password"), http.StatusBadRequest}
-	ErrInvalidToken         = ApiErrx{errors.New("session expired"), http.StatusUnauthorized}
+	ErrInvalidToken               = ApiErrx{errors.New("session expired"), http.StatusUnauthorized}
 
-  // Validation errors
-	ErrInvalidBearerHeader        = ApiErrx{errors.New("invalid auth header"), http.StatusBadRequest}
+	// Validation errors
+	ErrInvalidBearerHeader  = ApiErrx{errors.New("invalid auth header"), http.StatusBadRequest}
 	ErrUnprocessableContent = ApiErrx{errors.New("invalid input"), http.StatusUnprocessableEntity}
 )
