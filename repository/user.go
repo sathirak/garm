@@ -44,7 +44,7 @@ func CreateUser(user *models.UserTable, userCredential *models.UserCredentialTab
 
 	userRes := &models.UserRes{}
 	if err := mapstructure.Decode(user, userRes); err != nil {
-		return nil, errx.NewError(err, errx.ErrParsing)
+		return nil, errx.NewError(err, errx.ErrInternalServer)
 	}
 	return userRes, errx.Nil()
 }

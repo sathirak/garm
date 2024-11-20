@@ -26,8 +26,8 @@ func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 		return nil, errx.NewError(nil, errx.ErrEmailUnavailable)
 	}
 
-	if err := validator.ValidatePassword(signUpDto.Password); err != nil {
-		return nil, errx.NewError(err, errx.ErrPasswordInvalid)
+	if err := validator.ValidatePassword(signUpDto.Password); !err.IsNil() {
+		return nil, err
 	}
 
 	hash, salt, err := hashing.GenerateHashSalt(signUpDto.Password)
@@ -77,9 +77,9 @@ func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
 		return nil, err
 	}
 
-	if err := hashing.ValidateCredentials(userWithCredentials.Credential.Hash, userWithCredentials.Credential.Salt, signInDto.Password); !err.IsNil() {
+	if err := hashing.ValidateCredentials(userWithCredentials.C.Hash, userWithCredentials.C.Salt, signInDto.Password); !err.IsNil() {
 		if err.ApiError == errx.ErrInvalidCredentials {
-			if err := UpdateRetries(userWithCredentials.Credential.Retries, userWithCredentials.ID); !err.IsNil() {
+			if err := UpdateRetries(userWithCredentials.C.Retries, userWithCredentials.ID); !err.IsNil() {
 				return nil, err
 			}
 		}
@@ -100,8 +100,8 @@ func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) er
 		return err
 	}
 
-	if err := validator.ValidatePassword(resetDto.NewPassword); err != nil {
-		return errx.NewError(err, errx.ErrPasswordInvalid)
+	if err := validator.ValidatePassword(resetDto.NewPassword); !err.IsNil() {
+		return err
 	}
 
 	userWithCredential, err := repository.GetUserCredential(resetDto.Email)
@@ -110,15 +110,15 @@ func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) er
 		return err
 	}
 
-	if err := hashing.ValidateCredentials(userWithCredential.Credential.Hash, userWithCredential.Credential.Salt, resetDto.OldPassword); !err.IsNil() {
+	if err := hashing.ValidateCredentials(userWithCredential.C.Hash, userWithCredential.C.Salt, resetDto.OldPassword); !err.IsNil() {
 		return err
 	}
 
-	userWithCredential.Credential.Hash, userWithCredential.Credential.Salt, err = hashing.GenerateHashSalt(resetDto.NewPassword)
+	userWithCredential.C.Hash, userWithCredential.C.Salt, err = hashing.GenerateHashSalt(resetDto.NewPassword)
 	if !err.IsNil() {
 		return err
 	}
-	if err = repository.UpdateEmailPassword(&userWithCredential.Credential); !err.IsNil() {
+	if err = repository.UpdateEmailPassword(&userWithCredential.C); !err.IsNil() {
 		return err
 	}
 

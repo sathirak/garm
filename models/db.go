@@ -36,5 +36,5 @@ func (UserTable) TableName() string {
 
 type UserWithCredentials struct {
 	UserTable
-	Credential UserCredentialTable `gorm:"foreignKey:UserID;references:ID"`
+	C UserCredentialTable `gorm:"foreignKey:UserID;references:ID"`
 }

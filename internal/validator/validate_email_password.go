@@ -31,10 +31,16 @@ func ValidateSignUp(signUpDto *models.SignUpUserReq) errx.Errx {
 	return errx.Nil()
 }
 
-func ValidatePassword(password string) error {
+func ValidatePassword(password string) errx.Errx {
 
 	const minEntropyBits = 60
-	return passwordvalidator.Validate(password, minEntropyBits)
+	err := passwordvalidator.Validate(password, minEntropyBits)
+
+	if err != nil {
+		return errx.NewError(err, errx.ErrInvalidCredentials)
+	}
+
+	return errx.Nil()
 }
 
 func CheckPasswordEntropy(password string) float64 {
