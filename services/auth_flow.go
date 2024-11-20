@@ -3,14 +3,16 @@ package services
 import (
 	"math"
 
+	"github.com/hotelbear/garm/internal/errx"
 	"github.com/hotelbear/garm/internal/validator"
 	"github.com/hotelbear/garm/models"
+	"github.com/hotelbear/garm/repository"
 )
 
-func PasswordCheck(password string) models.PasswordCheck {
+func CheckPassword(password string) models.CheckPasswordRes {
 
 	entropy := validator.CheckPasswordEntropy(password)
-	return models.PasswordCheck{
+	return models.CheckPasswordRes{
 		Strength: int(math.Floor(entropy)),
 	}
 }

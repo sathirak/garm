@@ -3,7 +3,6 @@ package repository
 import (
 	"errors"
 
-	"github.com/hotelbear/garm/dto"
 	"github.com/hotelbear/garm/internal/db"
 	"github.com/hotelbear/garm/models"
 	"gorm.io/gorm"
@@ -11,7 +10,7 @@ import (
 )
 
 func IsEmailAvailable(email string) (bool, error) {
-	err := db.Get().First(&models.UserDB{}, "email = ?", email).Error
+	err := db.Get().First(&models.UserTable{}, "email = ?", email).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return true, nil
@@ -23,7 +22,7 @@ func IsEmailAvailable(email string) (bool, error) {
 }
 
 func IsIDAvailable(id string) (bool, error) {
-	err := db.Get().First(&models.UserDB{}, "id = ?", id).Error
+	err := db.Get().First(&models.UserTable{}, "id = ?", id).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return true, nil
@@ -34,12 +33,12 @@ func IsIDAvailable(id string) (bool, error) {
 	return false, nil
 }
 
-func GetUserMeta(id string) (*models.User, error) {
-	var user models.UserDB
+func GetUserMeta(id string) (*models.UserRes, error) {
+	var user models.UserTable
 	if err := db.Get().First(&user, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
-	return &models.User{
+	return &models.UserRes{
 		FirstName:     user.FirstName,
 		LastName:      user.LastName,
 		Email:         user.Email,
@@ -51,26 +50,16 @@ func GetUserMeta(id string) (*models.User, error) {
 	}, nil
 }
 
-func CreateUser(user *dto.UserCreate, salt string, hash string) (*models.User, error) {
+func CreateUser(user *models.UserTable, salt string, hash string) (*models.UserRes, error) {
 	conn := db.Get()
 
-	userGorm := models.UserDB{
-		FirstName:     user.FirstName,
-		LastName:      user.LastName,
-		Email:         user.Email,
-		Locale:        user.Locale,
-		ContactNo:     user.ContactNo,
-		CountryCode:   user.CountryCode,
-		VerifiedEmail: user.VerifiedEmail,
-	}
-
 	err := conn.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Omit("id", "is_email_verified", "status", "is_deleted", "created_at", "updated_at").Clauses(clause.Returning{}).Create(&userGorm).Error; err != nil {
+		if err := tx.Omit("id", "is_email_verified", "status", "is_deleted", "created_at", "updated_at").Clauses(clause.Returning{}).Create(&user).Error; err != nil {
 			return err
 		}
 
-		userCredential := &models.UserCredentialDB{
-			UserID: userGorm.ID,
+		userCredential := &models.UserCredentialTable{
+			UserID: user.ID,
 			Salt:   salt,
 			Hash:   hash,
 		}
@@ -86,14 +75,14 @@ func CreateUser(user *dto.UserCreate, salt string, hash string) (*models.User, e
 		return nil, err
 	}
 
-	return &models.User{
-		FirstName:     userGorm.FirstName,
-		LastName:      userGorm.LastName,
-		Email:         userGorm.Email,
-		Locale:        userGorm.Locale,
-		ContactNo:     userGorm.ContactNo,
-		CountryCode:   userGorm.CountryCode,
-		ID:            userGorm.ID,
-		VerifiedEmail: userGorm.VerifiedEmail,
+	return &models.UserRes{
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Email:         user.Email,
+		Locale:        user.Locale,
+		ContactNo:     user.ContactNo,
+		CountryCode:   user.CountryCode,
+		ID:            user.ID,
+		VerifiedEmail: user.VerifiedEmail,
 	}, nil
 }

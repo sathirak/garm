@@ -2,15 +2,15 @@ package validator
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/hotelbear/garm/dto"
 	"github.com/hotelbear/garm/internal/errx"
 	"github.com/hotelbear/garm/internal/logger"
+	"github.com/hotelbear/garm/models"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
 
 var Validate *validator.Validate
 
-func ValidateSignUp(signUpDto *dto.SignUpUser) errx.Errx {
+func ValidateSignUp(signUpDto *models.SignUpUserReq) errx.Errx {
 	log := logger.Get()
 	Validate = validator.New(validator.WithRequiredStructEnabled())
 
@@ -41,7 +41,7 @@ func CheckPasswordEntropy(password string) float64 {
 	return passwordvalidator.GetEntropy(password)
 }
 
-func ValidateSignIn(signInDto *dto.SignInUser) errx.Errx {
+func ValidateSignIn(signInDto *models.SignInUserReq) errx.Errx {
 	log := logger.Get()
 	Validate = validator.New(validator.WithRequiredStructEnabled())
 

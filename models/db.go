@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type UserCredentialDB struct {
+type UserCredentialTable struct {
 	UserID    string    `gorm:"primaryKey;column:user_id;"`
 	Salt      string    `gorm:"column:salt;"`
 	Hash      string    `gorm:"column:hash;"`
@@ -11,11 +11,11 @@ type UserCredentialDB struct {
 	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
 
-func (UserCredentialDB) TableName() string {
+func (UserCredentialTable) TableName() string {
 	return "user_credential"
 }
 
-type UserDB struct {
+type UserTable struct {
 	ID            string    `gorm:"primaryKey;column:id;"`
 	VerifiedEmail bool      `gorm:"column:is_email_verified;"`
 	FirstName     string    `gorm:"column:first_name;"`
@@ -30,6 +30,6 @@ type UserDB struct {
 	UpdatedAt     time.Time `gorm:"column:updated_at"`
 }
 
-func (UserDB) TableName() string {
+func (UserTable) TableName() string {
 	return "user"
 }

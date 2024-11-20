@@ -1,10 +1,7 @@
 package services
 
 import (
-	"time"
-
 	"github.com/gin-gonic/gin"
-	"github.com/hotelbear/garm/dto"
 	"github.com/hotelbear/garm/internal/errx"
 	"github.com/hotelbear/garm/internal/hashing"
 	"github.com/hotelbear/garm/internal/jwt"
@@ -13,7 +10,7 @@ import (
 	"github.com/hotelbear/garm/repository"
 )
 
-func SignUpUser(signUpDto *dto.SignUpUser) (*models.User, errx.Errx) {
+func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 
 	if err := validator.ValidateSignUp(signUpDto); !err.IsNil() {
 		return nil, err
@@ -37,18 +34,14 @@ func SignUpUser(signUpDto *dto.SignUpUser) (*models.User, errx.Errx) {
 		return nil, errx.NewError(err, errx.ErrInternalServerErr)
 	}
 
-	user := dto.UserCreate{
-		VerifiedEmail: false,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
-		UserInit: dto.UserInit{
-			FirstName:   signUpDto.FirstName,
-			LastName:    signUpDto.LastName,
-			Email:       signUpDto.Email,
-			Locale:      signUpDto.Locale,
-			ContactNo:   signUpDto.ContactNo,
-			CountryCode: signUpDto.CountryCode,
-		},
+	user := models.UserTable{
+		FirstName:   signUpDto.FirstName,
+		LastName:    signUpDto.LastName,
+		Email:       signUpDto.Email,
+		Locale:      signUpDto.Locale,
+		ContactNo:   signUpDto.ContactNo,
+		CountryCode: signUpDto.CountryCode,
+		Status:      "active",
 	}
 
 	userMeta, err := repository.CreateUser(&user, salt, hash)
@@ -60,7 +53,7 @@ func SignUpUser(signUpDto *dto.SignUpUser) (*models.User, errx.Errx) {
 	return userMeta, errx.Nil()
 }
 
-func SignInUser(signInDto *dto.SignInUser) (*models.User, errx.Errx) {
+func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
 
 	if err := validator.ValidateSignIn(signInDto); !err.IsNil() {
 		return nil, err
@@ -98,7 +91,7 @@ func SignInUser(signInDto *dto.SignInUser) (*models.User, errx.Errx) {
 	return userMeta, errx.Nil()
 }
 
-func ResetPasswordUser(resetDto *dto.ResetPasswordUser, c *gin.Context) errx.Errx {
+func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) errx.Errx {
 
 	if _, err := jwt.Get(c); !err.IsNil() {
 		return err
