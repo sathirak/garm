@@ -4,38 +4,26 @@ import (
 	"errors"
 
 	"github.com/hotelbear/garm/internal/db"
+	"github.com/hotelbear/garm/internal/errx"
 	"github.com/hotelbear/garm/models"
 	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
-func IsEmailAvailable(email string) (bool, error) {
+func IsEmailAvailable(email string) (bool, errx.Errx) {
 	err := db.Get().First(&models.UserTable{}, "email = ?", email).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return true, nil
+		return true, errx.Nil()
 	} else if err != nil {
-		return false, err
+		return false, errx.NewError(err, errx.ErrDatabase)
 	}
 
-	return false, nil
+	return false, errx.Nil()
 }
 
-func GetUser(id string) (*models.UserRes, error) {
-	var user models.UserTable
-	if err := db.Get().First(&user, "id = ?", id).Error; err != nil {
-		return nil, err
-	}
-
-	userRes := &models.UserRes{}
-	if err := mapstructure.Decode(user, userRes); err != nil {
-		return nil, err
-	}
-	return userRes, nil
-}
-
-func CreateUser(user *models.UserTable, userCredential *models.UserCredentialTable) (*models.UserRes, error) {
+func CreateUser(user *models.UserTable, userCredential *models.UserCredentialTable) (*models.UserRes, errx.Errx) {
 	conn := db.Get()
 
 	err := conn.Transaction(func(tx *gorm.DB) error {
@@ -51,12 +39,12 @@ func CreateUser(user *models.UserTable, userCredential *models.UserCredentialTab
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, errx.NewError(err, errx.ErrDatabase)
 	}
 
 	userRes := &models.UserRes{}
 	if err := mapstructure.Decode(user, userRes); err != nil {
-		return nil, err
+		return nil, errx.NewError(err, errx.ErrParsing)
 	}
-	return userRes, nil
+	return userRes, errx.Nil()
 }

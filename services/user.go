@@ -18,8 +18,8 @@ func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 	}
 
 	IsAvailable, err := repository.IsEmailAvailable(signUpDto.Email)
-	if err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return nil, err
 	}
 
 	if !IsAvailable {
@@ -31,13 +31,13 @@ func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 	}
 
 	hash, salt, err := hashing.GenerateHashSalt(signUpDto.Password)
-	if err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return nil, err
 	}
 
 	user := &models.UserTable{}
 	if err := mapstructure.Decode(signUpDto, user); err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+		return nil, errx.NewError(err, errx.ErrInternalServer)
 	}
 
 	userCredential := &models.UserCredentialTable{
@@ -50,8 +50,8 @@ func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 
 	userMeta, err := repository.CreateUser(user, userCredential)
 
-	if err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return nil, err
 	}
 
 	return userMeta, errx.Nil()
@@ -63,8 +63,8 @@ func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
 		return nil, err
 	}
 	IsAvailable, err := repository.IsEmailAvailable(signInDto.Email)
-	if err != nil {
-		return nil, errx.NewError(err, errx.ErrEmailUnavailable)
+	if !err.IsNil() {
+		return nil, err
 	}
 
 	if IsAvailable {
@@ -73,8 +73,8 @@ func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
 
 	userWithCredentials, err := repository.GetUserCredential(signInDto.Email)
 
-	if err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return nil, err
 	}
 
 	if err := hashing.ValidateCredentials(userWithCredentials.Credential.Hash, userWithCredentials.Credential.Salt, signInDto.Password); !err.IsNil() {
@@ -88,7 +88,7 @@ func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
 
 	userRes := &models.UserRes{}
 	if err := mapstructure.Decode(userWithCredentials, userRes); err != nil {
-		return nil, errx.NewError(err, errx.ErrInternalServerErr)
+		return nil, errx.NewError(err, errx.ErrInternalServer)
 	}
 
 	return userRes, errx.Nil()
@@ -106,8 +106,8 @@ func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) er
 
 	userWithCredential, err := repository.GetUserCredential(resetDto.Email)
 
-	if err != nil {
-		return errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return err
 	}
 
 	if err := hashing.ValidateCredentials(userWithCredential.Credential.Hash, userWithCredential.Credential.Salt, resetDto.OldPassword); !err.IsNil() {
@@ -115,12 +115,11 @@ func ResetPasswordUser(resetDto *models.ResetPasswordUserReq, c *gin.Context) er
 	}
 
 	userWithCredential.Credential.Hash, userWithCredential.Credential.Salt, err = hashing.GenerateHashSalt(resetDto.NewPassword)
-	if err != nil {
-		return errx.NewError(err, errx.ErrInternalServerErr)
+	if !err.IsNil() {
+		return err
 	}
-
-	if err = repository.UpdateEmailPassword(&userWithCredential.Credential); err != nil {
-		return errx.NewError(err, errx.ErrInternalServerErr)
+	if err = repository.UpdateEmailPassword(&userWithCredential.Credential); !err.IsNil() {
+		return err
 	}
 
 	return errx.Nil()

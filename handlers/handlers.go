@@ -38,7 +38,7 @@ func Errorx(c *gin.Context, err errx.Errx) {
 	if apiErr != nil {
 		genericErr = apiErr.Error()
 	} else {
-		genericErr = errx.ErrInternalServerErr.Err.Error()
+		genericErr = errx.ErrInternalServer.Err.Error()
 	}
 
 	c.JSON(err.ApiError.StatusCode, Response{

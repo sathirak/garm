@@ -22,7 +22,7 @@ func ValidateSignUp(signUpDto *models.SignUpUserReq) errx.Errx {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return errx.NewError(err, errx.ErrInternalServerErr)
+			return errx.NewError(err, errx.ErrInternalServer)
 		}
 
 		// from here you can create your own error messages in whatever language you wish
@@ -53,7 +53,7 @@ func ValidateSignIn(signInDto *models.SignInUserReq) errx.Errx {
 		// value most including myself do not usually have code like this.
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			log.Info(err)
-			return errx.NewError(err, errx.ErrInternalServerErr)
+			return errx.NewError(err, errx.ErrInternalServer)
 		}
 
 		// from here you can create your own error messages in whatever language you wish
