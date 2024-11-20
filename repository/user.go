@@ -3,9 +3,9 @@ package repository
 import (
 	"errors"
 
+	"github.com/hotelbear/garm/dto"
 	"github.com/hotelbear/garm/internal/db"
 	"github.com/hotelbear/garm/models"
-	"github.com/hotelbear/garm/models/dto"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
