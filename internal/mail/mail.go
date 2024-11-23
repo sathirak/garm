@@ -6,9 +6,12 @@ import (
 	"mime/multipart"
 	"net/smtp"
 	"strings"
+	"time"
 
 	"github.com/hotelbear/garm/internal/config"
 	"github.com/hotelbear/garm/internal/errx"
+	"github.com/hotelbear/garm/models"
+	"github.com/hotelbear/garm/repository"
 )
 
 func SendMail(to []string, from string, templateId int, data interface{}) errx.Errx {
@@ -64,9 +67,25 @@ func SendMail(to []string, from string, templateId int, data interface{}) errx.E
 		to,
 		buf.Bytes(),
 	)
+
+	mailLog := &models.MailLogTable{
+		SentAt:         time.Now(),
+		RecepientEmail: to[0],
+		Data:           fmt.Sprintf("%v", data),
+		TemplateID:     templateId,
+	}
+
 	if err != nil {
+		mailLog.Status = "failed"
+		if err := repository.CreateMailLog(mailLog); !err.IsNil() {
+			return err
+		}
 		return errx.NewError(templateErr, errx.ErrInternalServer)
 	}
 
+	mailLog.Status = "sent"
+	if err := repository.CreateMailLog(mailLog); !err.IsNil() {
+		return err
+	}
 	return errx.Nil()
 }
