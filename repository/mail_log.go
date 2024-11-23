@@ -7,7 +7,7 @@ import (
 )
 
 func CreateMailLog(mailLog *models.MailLogTable) errx.Errx {
-	if err := db.Get().Omit("id", "recepient_id").Create(mailLog).Error; err != nil {
+	if err := db.Get().Omit("id").Create(mailLog).Error; err != nil {
 		return errx.NewError(err, errx.ErrDatabase)
 	}
 	return errx.Nil()

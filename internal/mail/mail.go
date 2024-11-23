@@ -2,6 +2,7 @@ package mail
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"mime/multipart"
 	"net/smtp"
@@ -14,7 +15,7 @@ import (
 	"github.com/hotelbear/garm/repository"
 )
 
-func SendMail(to []string, from string, templateId int, data interface{}) errx.Errx {
+func SendMail(to []string, from string, templateId int, data interface{}, id string) errx.Errx {
 
 	cfg := config.Get()
 
@@ -60,7 +61,12 @@ func SendMail(to []string, from string, templateId int, data interface{}) errx.E
 
 	writer.Close()
 
-	err := smtp.SendMail(
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return errx.NewError(err, errx.ErrInternalServer)
+	}
+
+	err = smtp.SendMail(
 		cfg.SMTP.Host+":"+cfg.SMTP.Port,
 		auth,
 		from,
@@ -71,8 +77,9 @@ func SendMail(to []string, from string, templateId int, data interface{}) errx.E
 	mailLog := &models.MailLogTable{
 		SentAt:         time.Now(),
 		RecepientEmail: to[0],
-		Data:           fmt.Sprintf("%v", data),
+		Data:           string(jsonData),
 		TemplateID:     templateId,
+		RecepientID:    id,
 	}
 
 	if err != nil {

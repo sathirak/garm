@@ -59,7 +59,7 @@ type MailLogTable struct {
 	SentAt         time.Time `gorm:"column:sent_at"`
 	RecepientEmail string    `gorm:"column:recepient_email;size:256;not null"`
 	RecepientID    string    `gorm:"column:recepient_id;type:uuid"`
-	Data           string    `gorm:"column:data;type:jsonb;serializer:json;not null"`
+	Data           string    `gorm:"column:data;type:jsonb;not null"`
 	TemplateID     int       `gorm:"column:template_id;not null"`
 	Status         string    `gorm:"column:status;not null"`
 }

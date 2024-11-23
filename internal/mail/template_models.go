@@ -1,6 +1,6 @@
 package mail
 
 type WelcomeEmail struct {
-	Name string
-	Link string
+	Name string `json:"name"`
+	Link string `json:"link"`
 }

@@ -60,7 +60,7 @@ func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 		Link: "https://hotelbear.lk",
 	}
 
-	err = mail.SendMail([]string{userMeta.Email}, "hello@hotelbear.lk", 1, data)
+	err = mail.SendMail([]string{userMeta.Email}, "hello@hotelbear.lk", 1, data, userMeta.ID)
 
 	if !err.IsNil() {
 		return nil, err
