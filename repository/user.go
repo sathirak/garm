@@ -31,6 +31,8 @@ func CreateUser(user *models.UserTable, userCredential *models.UserCredentialTab
 			return err
 		}
 
+		userCredential.UserID = user.ID
+
 		if err := tx.Create(userCredential).Error; err != nil {
 			return err
 		}

@@ -18,7 +18,15 @@ type AppConfig struct {
 	JWTExpTime time.Duration
 }
 
+type SMTPConfig struct {
+	Username string
+	Password string
+	Host     string
+	Port     string
+}
+
 type Config struct {
 	App      AppConfig
 	Database DatabaseConfig
+	SMTP     SMTPConfig
 }
