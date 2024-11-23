@@ -5,6 +5,7 @@ import (
 	"github.com/hotelbear/garm/internal/errx"
 	"github.com/hotelbear/garm/internal/hashing"
 	"github.com/hotelbear/garm/internal/jwt"
+	"github.com/hotelbear/garm/internal/mail"
 	"github.com/hotelbear/garm/internal/validator"
 	"github.com/hotelbear/garm/models"
 	"github.com/hotelbear/garm/repository"
@@ -49,6 +50,17 @@ func SignUpUser(signUpDto *models.SignUpUserReq) (*models.UserRes, errx.Errx) {
 	user.Status = "active"
 
 	userMeta, err := repository.CreateUser(user, userCredential)
+
+	if !err.IsNil() {
+		return nil, err
+	}
+
+	data := mail.WelcomeEmail{
+		Name: userMeta.FirstName,
+		Link: "https://hotelbear.lk",
+	}
+
+	err = mail.SendMail([]string{userMeta.Email}, "hello@hotelbear.lk", 1, data, userMeta.ID)
 
 	if !err.IsNil() {
 		return nil, err

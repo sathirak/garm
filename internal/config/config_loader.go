@@ -15,11 +15,17 @@ var requiredEnvs = [...]string{
 	"ENV",
 	"PORT",
 	"X_API_TOKEN",
+
 	"DB_HOST",
 	"DB_PORT",
 	"DB_USER",
 	"DB_PASSWORD",
 	"DB_NAME",
+
+	"SMTP_USER",
+	"SMTP_PASSWORD",
+	"SMTP_HOST",
+	"SMTP_PORT",
 }
 
 func Get() *Config {
@@ -48,6 +54,13 @@ func Initialize() {
 			Username: getEnv("DB_USER"),
 			Password: getEnv("DB_PASSWORD"),
 			DBName:   getEnv("DB_NAME"),
+		},
+
+		SMTP: SMTPConfig{
+			Username: getEnv("SMTP_USER"),
+			Password: getEnv("SMTP_PASSWORD"),
+			Host:     getEnv("SMTP_HOST"),
+			Port:     getEnv("SMTP_PORT"),
 		},
 	}
 
