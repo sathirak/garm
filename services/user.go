@@ -99,7 +99,7 @@ func SignInUser(signInDto *models.SignInUserReq) (*models.UserRes, errx.Errx) {
 	}
 
 	userRes := &models.UserRes{}
-	if err := mapstructure.Decode(userWithCredentials, userRes); err != nil {
+	if err := mapstructure.Decode(userWithCredentials.UserTable, userRes); err != nil {
 		return nil, errx.NewError(err, errx.ErrInternalServer)
 	}
 

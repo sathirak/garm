@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/hotelbear/garm/internal/db"
 	"github.com/hotelbear/garm/internal/errx"
@@ -17,8 +18,8 @@ func UpdateEmailPassword(userCredentials *models.UserCredentialTable) errx.Errx 
 func GetUserCredential(email string) (*models.UserWithCredentials, errx.Errx) {
 	var user models.UserWithCredentials
 
-	err := db.Get().Preload("Credential").First(&user, "email = ?", email).Error
-
+	err := db.Get().Preload("C").First(&user, "email = ?", email).Error
+	fmt.Println("user", user)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errx.NewError(err, errx.ErrDatabaseRecordNotFound)
 	}

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -8,10 +9,15 @@ import (
 	"github.com/hotelbear/garm/internal/errx"
 	"github.com/hotelbear/garm/internal/jwt"
 	"github.com/hotelbear/garm/models"
+	"github.com/hotelbear/garm/repository"
+	"github.com/mitchellh/mapstructure"
 )
 
 func Authenticate(c *gin.Context) (*models.UserAuthenticateRes, errx.Errx) {
 	var userAuthenticate models.UserAuthenticateRes
+
+	// Get refresh from query string instead of param
+	isRefresh := c.Query("refresh") == "true"
 	token, err := jwt.Get(c)
 
 	if !err.IsNil() {
@@ -28,9 +34,26 @@ func Authenticate(c *gin.Context) (*models.UserAuthenticateRes, errx.Errx) {
 		err = jwt.Set(c, token.ID)
 
 		if !err.IsNil() {
-			return nil, errx.NewError(err, errx.ErrInvalidToken)
+			return nil, err
 		}
 	}
+
+	if isRefresh {
+		user, err := repository.GetUserByID(token.ID)
+
+		if !err.IsNil() {
+			return nil, err
+		}
+
+		// Decode user directly without taking its address
+		if err := mapstructure.Decode(user, &userAuthenticate); err != nil {
+			fmt.Println(err)
+			return nil, errx.NewError(err, errx.ErrInternalServer)
+		}
+
+		return &userAuthenticate, errx.Nil()
+	}
+
 	userAuthenticate.ID = token.ID
 	return &userAuthenticate, errx.Nil()
 }

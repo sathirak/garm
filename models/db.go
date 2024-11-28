@@ -16,18 +16,18 @@ func (UserCredentialTable) TableName() string {
 }
 
 type UserTable struct {
-	ID            string    `gorm:"primaryKey;column:id;"`
-	VerifiedEmail bool      `gorm:"column:is_email_verified;"`
-	FirstName     string    `gorm:"column:first_name;"`
-	LastName      string    `gorm:"column:last_name;"`
-	ContactNo     string    `gorm:"column:contact_no;"`
-	CountryCode   string    `gorm:"column:country_code;"`
-	Email         string    `gorm:"column:email;"`
-	Locale        string    `gorm:"column:locale;"`
-	Status        string    `gorm:"column:status;"`
-	IsDeleted     bool      `gorm:"column:is_deleted;"`
-	CreatedAt     time.Time `gorm:"column:created_at"`
-	UpdatedAt     time.Time `gorm:"column:updated_at"`
+	ID            string    `gorm:"primaryKey;column:id;" json:"id"`
+	VerifiedEmail bool      `gorm:"column:is_email_verified;" json:"is_email_verified"`
+	FirstName     string    `gorm:"column:first_name;" json:"first_name"`
+	LastName      string    `gorm:"column:last_name;" json:"last_name"`
+	ContactNo     string    `gorm:"column:contact_no;" json:"contact_no"`
+	CountryCode   string    `gorm:"column:country_code;" json:"country_code"`
+	Email         string    `gorm:"column:email;" json:"email"`
+	Locale        string    `gorm:"column:locale;" json:"locale"`
+	Status        string    `gorm:"column:status;" json:"status"`
+	IsDeleted     bool      `gorm:"column:is_deleted;" json:"is_deleted"`
+	CreatedAt     time.Time `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt     time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
 
 func (UserTable) TableName() string {

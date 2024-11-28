@@ -50,3 +50,15 @@ func CreateUser(user *models.UserTable, userCredential *models.UserCredentialTab
 	}
 	return userRes, errx.Nil()
 }
+
+func GetUserByID(id string) (*models.UserTable, errx.Errx) {
+	var user models.UserTable
+	if err := db.Get().First(&user, "id = ?", id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errx.NewError(err, errx.ErrDatabaseRecordNotFound)
+		}
+		return nil, errx.NewError(err, errx.ErrDatabase)
+	}
+
+	return &user, errx.Nil()
+}
