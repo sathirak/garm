@@ -9,7 +9,13 @@ import (
 
 func Cors() gin.HandlerFunc {
 	return cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "stg.hotelbear.lk", "hotelbear.lk"},
+		AllowOrigins: []string{
+			"http://localhost:3000",
+			"https://stg.hotelbear.lk",
+			"https://www.stg.hotelbear.lk",
+			"https://hotelbear.lk",
+			"https://www.hotelbear.lk",
+		},
 		AllowMethods:     []string{"POST", "OPTIONS", "GET", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length", "Authorization"},
