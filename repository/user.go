@@ -60,6 +60,6 @@ func GetUserByID(id string) (*models.UserTable, errx.Errx) {
 		}
 		return nil, errx.NewError(err, errx.ErrDatabase)
 	}
-fmt.Printf("user: %v\n", user)
+	fmt.Printf("user: %v\n", user)
 	return &user, errx.Nil()
 }
