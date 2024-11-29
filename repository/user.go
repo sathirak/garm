@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/hotelbear/garm/internal/db"
 	"github.com/hotelbear/garm/internal/errx"
@@ -59,6 +60,6 @@ func GetUserByID(id string) (*models.UserTable, errx.Errx) {
 		}
 		return nil, errx.NewError(err, errx.ErrDatabase)
 	}
-
+fmt.Printf("user: %v\n", user)
 	return &user, errx.Nil()
 }

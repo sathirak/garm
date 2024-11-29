@@ -44,13 +44,13 @@ func Authenticate(c *gin.Context) (*models.UserAuthenticateRes, errx.Errx) {
 		if !err.IsNil() {
 			return nil, err
 		}
-
+		fmt.Println(user)
 		// Decode user directly without taking its address
 		if err := mapstructure.Decode(user, &userAuthenticate); err != nil {
 			fmt.Println(err)
 			return nil, errx.NewError(err, errx.ErrInternalServer)
 		}
-
+		fmt.Println(userAuthenticate)
 		return &userAuthenticate, errx.Nil()
 	}
 

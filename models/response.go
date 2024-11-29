@@ -8,15 +8,18 @@ type UserRes struct {
 	Email         string `json:"email"`
 	Locale        string `json:"locale"`
 	ID            string `json:"id"`
-	VerifiedEmail bool   `json:"verified_email"`
+	VerifiedEmail bool   `json:"is_email_verified"`
 }
 
 type UserAuthenticateRes struct {
-	ID        string `json:"id,omitempty"`
-	FirstName string `json:"first_name,omitempty"`
-	LastName  string `json:"last_name,omitempty"`
-	Email     string `json:"email,omitempty"`
-	Locale    string `json:"locale,omitempty"`
+  ID            string `json:"id,omitempty"`
+  VerifiedEmail *bool  `json:"is_email_verified,omitempty"`
+  FirstName     string `json:"first_name,omitempty"`
+  LastName      string `json:"last_name,omitempty"`
+  ContactNo     string `json:"contact_no,omitempty"`
+  CountryCode   string `json:"country_code,omitempty"`
+  Email         string `json:"email,omitempty"`
+  Locale        string `json:"locale,omitempty"`
 }
 
 type UserCredentialRes struct {
