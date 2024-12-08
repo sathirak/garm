@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +16,7 @@ func Authenticate(c *gin.Context) (*models.UserAuthenticateRes, errx.Errx) {
 	var userAuthenticate models.UserAuthenticateRes
 
 	// Get refresh from query string instead of param
-	isRefresh := c.Query("refresh") == "true"
+	isVerbose := c.Query("verbose") == "true"
 	token, err := jwt.Get(c)
 
 	if !err.IsNil() {
@@ -38,19 +37,17 @@ func Authenticate(c *gin.Context) (*models.UserAuthenticateRes, errx.Errx) {
 		}
 	}
 
-	if isRefresh {
+	if isVerbose {
 		user, err := repository.GetUserByID(token.ID)
 
 		if !err.IsNil() {
 			return nil, err
 		}
-		fmt.Println(user)
+
 		// Decode user directly without taking its address
 		if err := mapstructure.Decode(user, &userAuthenticate); err != nil {
-			fmt.Println(err)
 			return nil, errx.NewError(err, errx.ErrInternalServer)
 		}
-		fmt.Println(userAuthenticate)
 		return &userAuthenticate, errx.Nil()
 	}
 

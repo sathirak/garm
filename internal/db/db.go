@@ -15,12 +15,12 @@ var db *sql.DB
 var gormDB *gorm.DB
 
 func Get() *gorm.DB {
-	return gormDB.Session(&gorm.Session{PrepareStmt: false})
+	return gormDB.Session(&gorm.Session{PrepareStmt: true})
 }
 
 func Close() {
 	log := logger.Get()
-	gormDB.Exec("DEALLOCATE ALL")
+	// gormDB.Exec("DEALLOCATE ALL")
 	err := db.Close()
 
 	if err != nil {
@@ -50,7 +50,7 @@ func Initialize() {
 
 	db, err = gormDB.DB()
 
-	gormDB.Exec("DEALLOCATE ALL")
+	// gormDB.Exec("DEALLOCATE ALL")
 
 	if err != nil {
 		log.Errorw("startup", "package", "db", "error", err.Error())
