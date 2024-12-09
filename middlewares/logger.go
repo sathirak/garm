@@ -23,7 +23,7 @@ func Logger() gin.HandlerFunc {
 		c.Next()
 
 		end := time.Now()
-		latency := end.Sub(start)
+		latency := end.Sub(start).Milliseconds()
 
 		statusCode := c.Writer.Status()
 
