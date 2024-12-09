@@ -15,7 +15,7 @@ func Logger() gin.HandlerFunc {
 		start := time.Now()
 		method := c.Request.Method
 		userAgent := c.Request.Header.Get("User-Agent")
-    forwardedIp := c.Request.Header.Get("X-Forwarded-For")
+		forwardedIp := c.Request.Header.Get("X-Forwarded-For")
 		path := c.Request.URL.Path
 		reqId := requestid.Get(c)
 
