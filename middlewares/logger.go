@@ -13,13 +13,13 @@ func Logger() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		start := time.Now()
-		clientIP := c.ClientIP()
 		method := c.Request.Method
 		userAgent := c.Request.Header.Get("User-Agent")
+    forwardedIp := c.Request.Header.Get("X-Forwarded-For")
 		path := c.Request.URL.Path
 		reqId := requestid.Get(c)
 
-		log.Infow("incoming", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "requestId", reqId)
+		log.Infow("incoming", "method", method, "path", path, "ip", forwardedIp, "userAgent", userAgent, "requestId", reqId)
 		c.Next()
 
 		end := time.Now()
@@ -29,8 +29,8 @@ func Logger() gin.HandlerFunc {
 
 		if err := c.Errors.Last(); err != nil {
 			errorString := c.Errors.Last().Error()
-			log.Errorw(errorString, "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "requestId", reqId, "latency", latency, "status", statusCode)
+			log.Errorw(errorString, "method", method, "path", path, "ip", forwardedIp, "userAgent", userAgent, "requestId", reqId, "latency", latency, "status", statusCode)
 		}
-		log.Infow("outgoing", "method", method, "path", path, "ip", clientIP, "userAgent", userAgent, "requestId", reqId, "latency", latency, "status", statusCode)
+		log.Infow("outgoing", "method", method, "path", path, "ip", forwardedIp, "userAgent", userAgent, "requestId", reqId, "latency", latency, "status", statusCode)
 	}
 }
